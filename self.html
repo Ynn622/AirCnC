@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>個人資料 | AirCnC</title>
+    <!-- Title icon -->
+    <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/self.css">
     <!-- FontAwesome CDN -->
@@ -116,7 +118,7 @@
     async function updateUserInfo(){
         const userName = await getAccount();
         $("#userName").text(userName.slice(0, 6) + "..." + userName.slice(-4));
-        $("#userBalance").text(await getBalance(provider, userName));
+        $("#userBalance").text(await getBalance(provider, userName)+" Ether");
         $("#chainName").text(await getChainNameByID(ethObj.chainId));
     }
 </script>
