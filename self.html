@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人資料 | AirCnC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/self.css">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <div class="hamburger" id="hamburgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="logo-area">
+            <a href="index.html">
+                <img src="images/logo.png" alt="logo" class="logo">
+            </a>
+            <div class="brand">
+                <div class="brand-title">AirCnC</div>
+                <div class="brand-subtitle">汽機車共享租賃</div>
+            </div>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">機車租借</a>
+            <a href="#">汽車租借</a>
+            <a href="upload.html">上傳車輛</a>
+            <a href="#">使用說明</a>
+        </nav>
+        <div class="user-icon">
+            <a id="user-icon-btn"><i class="fa-solid fa-user"></i></a>
+        </div>
+    </header>
+    <main>
+        <div class="profile-main row">
+            <div class="profile-left col-md-3 col-sm-12">
+                <div class="section-title">個人資料</div>
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-name"><span id="userName"></span></div>
+                <div class="profile-info">
+                    <b>餘額：</b><span id="userBalance">Loading...</span><br>
+                    <b>網路：</b><span id="chainName">Loading...</span>
+                </div>
+            </div>
+            <div class="profile-right col-md-8 col-sm-12">
+                <div>
+                    <div class="section-title">租車列表</div>
+                    <div class="rent-list">
+                        <div class="rent-card">
+                            <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                            <div class="card-info">
+                                <h2>JET SL 125cc</h2>
+                                <div>車主：高潮貴</div>
+                                <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                                <div>車牌：XXX-1234</div>
+                                <div>計費方式：$30 wei/h</div>
+                                <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                                <button class="cancel-btn">取消租車</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">已上傳車輛</div>
+                    <div class="uploaded-list">
+                        <div class="uploaded-card">
+                            <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                            <div class="card-info">
+                                <h2>JET SL 125cc</h2>
+                                <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                                <div>車牌：XXX-1234</div>
+                                <div>計費方式：$30 wei/h</div>
+                                <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                                <div>
+                                    <button class="edit-btn">修改資料</button>
+                                    <button class="remove-btn">下架車輛</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+<!-- Bootstrap CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+ <!-- jQuery CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- ethers.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js"></script>
+<!-- 連接錢包 -->
+<script src="js/connent.js"></script>
+<script>
+    // 響應式漢堡選單
+    const hamburger = document.getElementById('hamburgerMenu');
+    const nav = document.getElementById('mainNav');
+    hamburger.onclick = function() {
+        nav.classList.toggle('active');
+    };
+    $("#user-icon-btn").click(connect);
+</script>
+<script>
+    // 更新個人資料
+    async function updateUserInfo(){
+        const userName = await getAccount();
+        $("#userName").text(userName.slice(0, 6) + "..." + userName.slice(-4));
+        $("#userBalance").text(await getBalance(provider, userName));
+        $("#chainName").text(await getChainNameByID(ethObj.chainId));
+    }
+</script>
+<script>
+    var ethObj = window.ethereum;
+    createProvider();
+    $(async function(){
+        const chainId = ethereum.request({ method: 'eth_chainId' });
+        console.log(chainId.PromiseResult);
+        await updateUserInfo();
+    });
+
+    // 切換網路
+    ethereum.on("chainChanged", async function(accounts){
+        console.log("切換網路", accounts);
+        createProvider();
+        await updateUserInfo();
+    });
+
+    // 切換帳號
+    ethereum.on("accountsChanged", async function(accounts){
+        console.log("切換帳號", accounts);
+        createProvider();
+        await updateUserInfo();
+    });
+
+</script>
+</html> 

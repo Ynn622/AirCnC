@@ -1,0 +1,137 @@
+body {
+    background: #f5f6fa;
+}
+.rent-detail-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px #0001;
+    margin: 40px auto;
+    max-width: 1200px;
+    display: flex;
+    gap: 48px;
+    padding: 40px 40px 40px 40px;
+    align-items: flex-start;
+}
+.rent-detail-img {
+    flex: 0 0 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rent-detail-img img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #eee;
+}
+.rent-detail-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.rent-detail-info h1 {
+    font-size: 2.3em;
+    font-weight: bold;
+    margin-bottom: 0.2em;
+}
+.rent-detail-address {
+    font-size: 1.2em;
+    color: #222;
+    margin-bottom: 10px;
+}
+.rent-detail-table {
+    display: flex;
+    gap: 60px;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+.rent-detail-table span {
+    font-weight: bold;
+    font-size: 1em;
+}
+.rent-detail-date {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 18px;
+}
+.rent-detail-form {
+    background: #f7fafc;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0001;
+    padding: 20px 30px 24px 30px;
+    margin-top: 18px;
+    max-width: 420px;
+}
+.rent-form-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #4a5a6a;
+}
+.rent-form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.rent-form-row label {
+    min-width: 38px;
+    font-weight: bold;
+    color: #222;
+}
+.rent-form-row input[type="date"],
+.rent-form-row input[type="time"] {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+.rent-form-duration {
+    color: #4a5a6a;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+.rent-form-total {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2d3a4b;
+    justify-content: space-between;
+}
+.rent-confirm-btn {
+    margin-top: 18px;
+    background: #8caabf;
+    color: #222;
+    font-size: 1.3em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 30px;
+    cursor: pointer;
+    float: right;
+    box-shadow: 0 2px 4px #0001;
+    transition: background 0.2s;
+}
+.rent-confirm-btn:hover {
+    background: #6b8fa3;
+    color: #fff;
+}
+@media (max-width: 1000px) {
+    .rent-detail-container {
+        flex-direction: column;
+        gap: 30px;
+        padding: 20px 10px;
+    }
+    .rent-detail-img {
+        width: 100%;
+        justify-content: center;
+    }
+    .rent-detail-img img {
+        max-width: 100%;
+    }
+    .rent-detail-form {
+        max-width: 100%;
+    }
+} 

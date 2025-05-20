@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirCnC 汽機車共享租賃</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <a href="index.html">
+                <img src="images/logo.png" alt="logo" class="logo">
+            </a>
+            <div class="brand">
+                <div class="brand-title">AirCnC</div>
+                <div class="brand-subtitle">汽機車共享租賃</div>
+            </div>
+        </div>
+        <div class="hamburger" id="hamburgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">機車租借</a>
+            <a href="#">汽車租借</a>
+            <a href="upload.html">上傳車輛</a>
+            <a href="#">使用說明</a>
+        </nav>
+        <div class="user-icon">
+            <a><i class="fa-solid fa-user" id="user-icon-btn"></i></a>
+        </div>
+    </header>
+    <main>
+        <div class="search-bar">
+            <input type="text" placeholder="點我快速搜車">
+            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div class="row">
+            <!-- 卡片範例，複製多份即可 -->
+            <div class="rent-card col-md-6">
+                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                <div class="card-info">
+                    <h2>JET SL 125cc</h2>
+                    <div>車主：高潮貴</div>
+                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                    <div>車牌：XXX-1234</div>
+                    <div>計費方式：$30 wei/h</div>
+                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                    <button class="rent-btn" onclick="window.location.href='rent.html'">預約租車</button>
+                </div>
+            </div>
+            <!-- 複製上方 rent-card 以顯示多台車 -->
+            <div class="rent-card col-md-6">
+                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                <div class="card-info">
+                    <h2>JET SL 125cc</h2>
+                    <div>車主：高潮貴</div>
+                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                    <div>車牌：XXX-1234</div>
+                    <div>計費方式：$30 wei/h</div>
+                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                    <button class="rent-btn" onclick="window.location.href='rent.html'">預約租車</button>
+                </div>
+            </div>
+            <div class="rent-card col-md-6">
+                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                <div class="card-info">
+                    <h2>JET SL 125cc</h2>
+                    <div>車主：高潮貴</div>
+                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                    <div>車牌：XXX-1234</div>
+                    <div>計費方式：$30 wei/h</div>
+                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                    <button class="rent-btn" >預約租車</button>
+                </div>
+            </div>
+            <div class="rent-card col-md-6">
+                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
+                <div class="card-info">
+                    <h2>JET SL 125cc</h2>
+                    <div>車主：高潮貴</div>
+                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                    <div>車牌：XXX-1234</div>
+                    <div>計費方式：$30 wei/h</div>
+                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
+                    <button class="rent-btn">預約租車</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+<!-- Bootstrap CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+<!-- jQuery CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="js/connent.js"></script>
+<script>
+    // 響應式漢堡選單
+    const hamburger = document.getElementById('hamburgerMenu');
+    const nav = document.getElementById('mainNav');
+    hamburger.onclick = function() {
+        nav.classList.toggle('active');
+    };
+    $("#user-icon-btn").click(connect);
+</script>
+</html>

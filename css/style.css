@@ -1,0 +1,237 @@
+body {
+    margin: 0;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    background: #f5f6fa;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    background: #e5e5e5;
+    padding: 10px 20px;
+    justify-content: space-between;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 55px;
+    height: 55px;
+    border-radius: 20%;
+    background: #fff;
+    margin-right: 10px;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #2d3a4b;
+}
+
+.brand-subtitle {
+    font-size: 0.95em;
+    color: #4a5a6a;
+}
+
+nav {
+    display: flex;
+    gap: 70px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #222;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: #0077b6;
+}
+
+.user-icon {
+    font-size: 2em;
+    color: #222;
+    background: #d9d9d9;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main {
+    padding: 30px 40px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.search-bar input {
+    width: 350px;
+    padding: 12px 18px;
+    font-size: 1.3em;
+    border: 1.5px solid #ccc;
+    border-radius: 10px 0 0 10px;
+    outline: none;
+    background: #f5f6fa;
+}
+
+.search-bar button {
+    padding: 12px 18px;
+    font-size: 1.3em;
+    border: 1.5px solid #ccc;
+    border-left: none;
+    border-radius: 0 10px 10px 0;
+    background: #f5f6fa;
+    cursor: pointer;
+}
+
+.rent-card {
+    display: flex;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px #0001;
+    padding: 20px;
+    align-items: center;
+    gap: 25px;
+    min-height: 220px;
+}
+
+.vehicle-img {
+    width: 30%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-info h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.rent-btn {
+    margin-top: 10px;
+    background: #8caabf;
+    color: #222;
+    font-size: 1.3em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 30px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px #0001;
+    transition: background 0.2s;
+}
+
+.rent-btn:hover {
+    background: #6b8fa3;
+    color: #fff;
+}
+
+/* === 響應式漢堡選單 === */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+.hamburger span {
+    display: block;
+    height: 5px;
+    width: 32px;
+    background: #222;
+    border-radius: 3px;
+    margin: 4px 0;
+    transition: 0.3s;
+}
+
+@media (max-width: 860px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+        position: relative;
+    }
+    nav {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        background: #e5e5e5;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        z-index: 100;
+        box-shadow: 0 4px 16px #0002;
+        padding: 24px 0 16px 0;
+        border-radius: 0 0 18px 18px;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+    nav.active {
+        display: flex;
+    }
+    nav a {
+        width: 100%;
+        padding: 16px 32px;
+        color: #222;
+        border-bottom: 1px solid #ddd;
+        background: none;
+        text-align: left;
+        font-size: 1.1em;
+    }
+    nav a:last-child {
+        border-bottom: none;
+    }
+    .hamburger {
+        display: flex;
+        position: absolute;
+        top: 20px;
+        z-index: 200;
+    }
+    .logo-area {
+        margin-top: 4px;
+        margin-bottom: 4px;
+        justify-content: center;
+    }
+    nav {
+        order: 1;
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        padding-top: 0;
+    }
+    .user-icon {
+        display: flex;
+        position: absolute;
+        top: 18px;
+        right: 32px;
+        z-index: 200;
+    }
+}

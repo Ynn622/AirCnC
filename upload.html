@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上傳車輛 | AirCnC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/upload.css">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <a href="index.html">
+                <img src="images/logo.png" alt="logo" class="logo">
+            </a>
+            <div class="brand">
+                <div class="brand-title">AirCnC</div>
+                <div class="brand-subtitle">汽機車共享租賃</div>
+            </div>
+        </div>
+        <div class="hamburger" id="hamburgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">機車租借</a>
+            <a href="#">汽車租借</a>
+            <a href="upload.html">上傳車輛</a>
+            <a href="#">使用說明</a>
+        </nav>
+        <div class="user-icon">
+            <a href="self.html"><i class="fa-solid fa-user"></i></a>
+        </div>
+    </header>
+    <main>
+        <div class="upload-title">上傳車輛資訊</div>
+        <div class="upload-container">
+            <div class="upload-main">
+                <div class="upload-left">
+                    <div class="upload-img-box" id="uploadImgBox">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>點擊上傳圖片</span>
+                        <input type="file" accept="image/*" style="display:none" id="carImgInput">
+                    </div>
+                    <div class="upload-img-label">車輛圖片</div>
+                </div>
+                <div class="upload-right">
+                    <div class="section-title" style="color:#fff;"><h5>車輛類型</h5></div>
+                    <div class="type-group">
+                        <button class="type-btn active" id="typeScooter">機車</button>
+                        <button class="type-btn car" id="typeCar">汽車</button>
+                    </div>
+                    <div class="section-title" style="color:#fff;"><h5>車輛詳細資訊</h5></div>
+                    <form class="upload-form">
+                        <label>地址</label>
+                        <div class="input-group">
+                            <input type="text" placeholder="請輸入地址">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <label>型號</label>
+                        <input type="text" placeholder="請輸入型號">
+                        <label>車牌</label>
+                        <input type="text" placeholder="請輸入車牌">
+                        <label>費用</label>
+                        <div class="input-group">
+                            <input type="number" placeholder="請輸入費用">
+                            <select>
+                                <option>Ether</option>
+                                <option>wei</option>
+                            </select>
+                        </div>
+                        <label>可預約日期</label>
+                        <div class="date-range">
+                            <input type="date" value="2025-05-01">
+                            <span style="color:#fff;">~</span>
+                            <input type="date" value="2025-05-01">
+                        </div>
+                    </form>
+                    <button class="upload-btn">上架車輛</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/upload.js"></script>
+    <script>
+        // 響應式漢堡選單
+        const hamburger = document.getElementById('hamburgerMenu');
+        const nav = document.getElementById('mainNav');
+        hamburger.onclick = function() {
+            nav.classList.toggle('active');
+        };
+    </script>
+</body>
+</html> 
