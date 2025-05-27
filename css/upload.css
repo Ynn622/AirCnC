@@ -63,7 +63,7 @@
 .type-group {
     display: flex;
     gap: 0;
-    margin-bottom: 18px;
+    margin-bottom: 30px;
 }
 
 .type-btn {
@@ -156,6 +156,12 @@
 .upload-btn:hover {
     background: #6b8fa3;
     color: #fff;
+}
+
+/* 時間選擇器錯誤狀態 */
+input[type="text"].error {
+    border-color: #ff4444;
+    background-color: #fff8f8;
 }
 
 @media (max-width: 900px) {
