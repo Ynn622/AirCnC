@@ -134,4 +134,68 @@ body {
     .rent-detail-form {
         max-width: 100%;
     }
+}
+
+/* 時間選擇器美化 */
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+input[type="datetime-local"]:hover {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 時間選擇器標籤樣式 */
+.rent-form-row label {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* 時間選擇器禁用狀態 */
+input[type="datetime-local"]:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+/* 時間選擇器錯誤狀態 */
+input[type="datetime-local"].error {
+    border-color: #ff4444;
+    background-color: #fff8f8;
+}
+
+/* 時間選擇器成功狀態 */
+input[type="datetime-local"].success {
+    border-color: #4CAF50;
+    background-color: #f8fff8;
+}
+
+/* 響應式設計 */
+@media screen and (max-width: 768px) {
+    input[type="datetime-local"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    .rent-form-row label {
+        font-size: 14px;
+    }
 } 

@@ -7,6 +7,7 @@
     <!-- Title icon -->
     <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/index.css">
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Bootstrap CDN -->
@@ -44,57 +45,8 @@
             <input type="text" placeholder="點我快速搜車">
             <button><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
-        <div class="row">
-            <!-- 卡片範例，複製多份即可 -->
-            <div class="rent-card col-md-6">
-                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                <div class="card-info">
-                    <h2>JET SL 125cc</h2>
-                    <div>車主：高潮貴</div>
-                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                    <div>車牌：XXX-1234</div>
-                    <div>計費方式：$30 wei/h</div>
-                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                    <button class="rent-btn" onclick="window.location.href='rent.html'">預約租車</button>
-                </div>
-            </div>
-            <!-- 複製上方 rent-card 以顯示多台車 -->
-            <div class="rent-card col-md-6">
-                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                <div class="card-info">
-                    <h2>JET SL 125cc</h2>
-                    <div>車主：高潮貴</div>
-                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                    <div>車牌：XXX-1234</div>
-                    <div>計費方式：$30 wei/h</div>
-                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                    <button class="rent-btn" onclick="window.location.href='rent.html'">預約租車</button>
-                </div>
-            </div>
-            <div class="rent-card col-md-6">
-                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                <div class="card-info">
-                    <h2>JET SL 125cc</h2>
-                    <div>車主：高潮貴</div>
-                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                    <div>車牌：XXX-1234</div>
-                    <div>計費方式：$30 wei/h</div>
-                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                    <button class="rent-btn" >預約租車</button>
-                </div>
-            </div>
-            <div class="rent-card col-md-6">
-                <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                <div class="card-info">
-                    <h2>JET SL 125cc</h2>
-                    <div>車主：高潮貴</div>
-                    <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                    <div>車牌：XXX-1234</div>
-                    <div>計費方式：$30 wei/h</div>
-                    <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                    <button class="rent-btn">預約租車</button>
-                </div>
-            </div>
+        <div class="row" id="rentalList">
+            <!-- 租車卡片將由 JavaScript 動態生成 -->
         </div>
     </main>
 </body>
@@ -104,14 +56,49 @@
     crossorigin="anonymous"></script>
 <!-- jQuery CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 響應式漢堡選單 -->
+<script type="module" src="js/menu.js"></script>
 <script src="js/connent.js"></script>
 <script>
-    // 響應式漢堡選單
-    const hamburger = document.getElementById('hamburgerMenu');
-    const nav = document.getElementById('mainNav');
-    hamburger.onclick = function() {
-        nav.classList.toggle('active');
-    };
-    $("#user-icon-btn").click(connect);
+    function timeToStr(timestamp){
+        // 轉換為日期（需要乘以 1000）
+        const date = new Date(timestamp * 1000);
+        // 輸出當地格式的日期（例如台灣時間）
+        return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+    }
+</script>
+<script type="module">
+    import { rentalList } from './js/rentalData.js';
+
+    // 動態生成租車卡片
+    function generateRentalCards() {
+        const rentalListContainer = document.getElementById('rentalList');
+        
+        rentalList.forEach(vehicle => {
+            const card = document.createElement('div');
+            card.className = 'rent-card col-md-6';
+            card.innerHTML = `
+                <img src="${vehicle.image}" alt="${vehicle.name}" class="vehicle-img">
+                <div class="card-info">
+                    <h2>${vehicle.model}</h2>
+                    <div><span>車主：</span>${vehicle.owner.slice(0,8)}</div>
+                    <div><span>地點：</span>${vehicle.location} <i class="fa-solid fa-location-dot"></i></div>
+                    <div><span>車牌：</span>${vehicle.plate} </div>
+                    <div><span>計費方式：</span>$${vehicle.pricePerHour} wei/h</div>
+                    <div><span>可租借日期：</span>${timeToStr(vehicle.startTimestamp)} ~ ${timeToStr(vehicle.endTimestamp)}</div>
+                    <button class="rent-btn" onclick="window.location.href='rent.html?id=${vehicle.id}'" ${vehicle.isActive ? 'disabled' : ''}>
+                        ${vehicle.isActive ? '已出租' : '預約租車'}
+                    </button>
+                </div>
+            `;
+            rentalListContainer.appendChild(card);
+        });
+    }
+
+    // 頁面載入時生成卡片
+    $(window).on('load', function () {
+            // 所有資源載入完成後執行
+            generateRentalCards();
+        });
 </script>
 </html>

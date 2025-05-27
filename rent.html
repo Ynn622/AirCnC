@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租車詳情 | AirCnC</title>
-    <!-- Title icon -->
+    <title>預約租車 - AirCnC</title>
     <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/rent.css">
@@ -17,7 +16,9 @@
 <body>
     <header>
         <div class="logo-area">
-            <a href="index.html"><img src="images/logo.png" alt="logo" class="logo"></a>
+            <a href="index.html">
+                <img src="images/logo.png" alt="logo" class="logo">
+            </a>
             <div class="brand">
                 <div class="brand-title">AirCnC</div>
                 <div class="brand-subtitle">汽機車共享租賃</div>
@@ -35,7 +36,7 @@
             <a href="#">使用說明</a>
         </nav>
         <div class="user-icon">
-            <a id="user-icon-btn"><i class="fa-solid fa-user"></i></a>
+            <a><i class="fa-solid fa-user" id="user-icon-btn"></i></a>
         </div>
     </header>
     <main>
@@ -45,14 +46,18 @@
             </div>
             <div class="rent-detail-info">
                 <h1>JET SL 125cc</h1>
-                <div class="rent-detail-address">台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
+                <div class="rent-detail-address">
+                    <i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;
+                    <span id="address-text">地址資料</span>
+                    <button type="button" id="navigation-btn" class="btn btn-outline-dark">導航</button>
+                </div>
                 <div class="rent-detail-table">
-                    <div><span>車主</span><br>高潮貴</div>
-                    <div><span>車牌</span><br>XXX-1234</div>
-                    <div><span>計費方式</span><br>$30 wei/h</div>
+                    <div><span>車主</span><br><span id="owner-text"></span></div>
+                    <div><span>車牌</span><br><span id="plate-text"></span></div>
+                    <div><span>計費方式</span><br><span id="price-text"></span></div>
                 </div>
                 <div class="rent-detail-date">
-                    <span>可用車日期</span>
+                    <span><b>可用車日期</b></span>
                     <span>2025/5/12 - 2025/12/31</span>
                 </div>
                 <div class="rent-detail-form">
@@ -60,20 +65,18 @@
                     <form id="rentForm">
                         <div class="rent-form-row">
                             <label>開始</label>
-                            <input type="date" id="startDate" value="2025-05-10">
-                            <input type="time" id="startTime" value="07:00">
+                            <input type="datetime-local" id="startDateTime" step="3600">
                         </div>
                         <div class="rent-form-row">
                             <label>結束</label>
-                            <input type="date" id="endDate" value="2025-05-11">
-                            <input type="time" id="endTime" value="08:00">
+                            <input type="datetime-local" id="endDateTime" step="3600">
                         </div>
                         <div class="rent-form-row rent-form-duration">
-                            <span>時長：</span><span id="duration">1天 1小時</span>
+                            <span>時長：</span><span id="duration">0小時</span>
                         </div>
                         <div class="rent-form-row rent-form-total">
                             <span>總計</span>
-                            <span id="totalPrice">$ 390 wei</span>
+                            <span id="totalPrice">$ 0 wei</span>
                         </div>
                         <button type="submit" class="rent-confirm-btn">確認租車</button>
                     </form>
@@ -81,14 +84,12 @@
             </div>
         </div>
     </main>
-    <script src="js/rent.js"></script>
-    <script>
-        // 響應式漢堡選單
-        const hamburger = document.getElementById('hamburgerMenu');
-        const nav = document.getElementById('mainNav');
-        hamburger.onclick = function() {
-            nav.classList.toggle('active');
-        };
-    </script>
+    <!-- jQuery CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 連線 -->
+    <script src="js/connent.js"></script>
+    <!-- 響應式漢堡選單 -->
+    <script type="module" src="js/menu.js"></script>
+    <script type="module" src="js/rent.js"></script>
 </body>
 </html> 
