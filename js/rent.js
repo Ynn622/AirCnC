@@ -104,7 +104,7 @@ $(document).ready(function() {
 
             // 驗證時間順序
             if (!validateTimeOrder(startDateTime, endDateTime)) {
-                alert('開始時間不能大於結束時間！');
+                // alert('開始時間不能大於結束時間！');
                 $('#endDateTime').addClass('error');
                 $('#endDateTime').val(startDateTime);
                 return;
@@ -161,5 +161,5 @@ function timeToStr(timestamp) {
 $('#navigation-btn').click(function() {
     const address = $('.rent-detail-address').text();
     const encodedAddress = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/dir/?api=1&origin=My+Location&destination=${encodedAddress}`, '_blank');
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
 });
