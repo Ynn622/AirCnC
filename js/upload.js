@@ -118,7 +118,7 @@ function initMap() {
     });
 }
 
-// 當頁面載入完成時初始化地圖
+// 當頁面載入完成時初始化地圖和日期選擇器
 $(document).ready(function() {
     // 點擊位置圖標時開啟地圖模態框
     $('#locationIcon').click(function() {
@@ -138,6 +138,16 @@ $(document).ready(function() {
             $('#address-text').val(selectedLocation.address);
             $('#mapModal').modal('hide');
         }
+    });
+
+    // 初始化 Flatpickr 日期範圍選擇器
+    flatpickr("#dateRangePicker", {
+        mode: "range",
+        showMonths: 2, // 顯示兩個月份
+        locale: "zh", // 如果需要繁體中文
+        dateFormat: "Y-m-d",
+        minDate: "today", // 限制只能選擇今天及之後的日期
+        position: "auto", // 自動調整彈出位置
     });
 });
 
@@ -172,7 +182,9 @@ $('#typeCar').on("click", function () {
 
 $('.upload-form').on("submit",function(e){
     e.preventDefault();
-    if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == ""){
+    if ($('#carImgInput').val()==""){
+        alert("請上傳照片！")
+    } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == ""){
         alert("請填寫所有資料！");
     } else {
         alert("上傳成功！");
