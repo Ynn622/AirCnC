@@ -214,7 +214,7 @@ $('.upload-form').on("submit", async function(e){
     e.preventDefault();
     if (!selectedFile){
         alert("請上傳照片！")
-    } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == ""){
+    } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == "" || $('#phone-text').val()==""){
         alert("請填寫所有資料！");
     } else {
         try {
@@ -236,6 +236,7 @@ $('.upload-form').on("submit", async function(e){
                 address: $('#address-text').val(),
                 model: $('#model-text').val(),
                 plate: $('#plate-text').val(),
+                phone: $('#phone-text').val(),
                 fee: $('#fee-text').val(),
                 type: $('#typeScooter').hasClass('active') ? 'scooter' : 'car',
                 dateRange: $('#dateRangePicker').val()
