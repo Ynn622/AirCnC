@@ -151,9 +151,37 @@ $(document).ready(function() {
     });
 });
 
+// 上傳圖片到 Cloudinary
+async function uploadToCloudinary(file) {
+    const cloudName = 'di4uqbo11'; // 請替換成您的 Cloudinary Cloud Name
+    const uploadPreset = 'AirCnC'; // 請替換成您的 Upload Preset
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.secure_url) {
+            return data.secure_url; // 返回安全的 HTTPS 網址
+        } else {
+            throw new Error('上傳失敗');
+        }
+    } catch (error) {
+        console.error('上傳圖片時發生錯誤:', error);
+        throw error;
+    }
+}
+
 // 原有的上傳圖片功能
 const uploadImgBox = document.getElementById('uploadImgBox');
 const carImgInput = document.getElementById('carImgInput');
+let selectedFile = null; // 儲存選擇的檔案
 
 uploadImgBox.addEventListener('click', () => {
     carImgInput.click();
@@ -162,6 +190,8 @@ uploadImgBox.addEventListener('click', () => {
 carImgInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
+        selectedFile = file;
+        // 使用 FileReader 顯示本地預覽
         const reader = new FileReader();
         reader.onload = (e) => {
             uploadImgBox.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -180,14 +210,44 @@ $('#typeCar').on("click", function () {
     $('#typeScooter').removeClass('active');
 })
 
-$('.upload-form').on("submit",function(e){
+$('.upload-form').on("submit", async function(e){
     e.preventDefault();
-    if ($('#carImgInput').val()==""){
+    if (!selectedFile){
         alert("請上傳照片！")
     } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == ""){
         alert("請填寫所有資料！");
     } else {
-        alert("上傳成功！");
-        // 在此新增上傳函式
+        try {
+            // 顯示上傳中狀態
+            uploadImgBox.innerHTML = '<div class="uploading">上傳中...</div>';
+            
+            // 上傳到 Cloudinary
+            const imageUrl = await uploadToCloudinary(selectedFile);
+            
+            // 更新預覽為上傳後的圖片
+            uploadImgBox.innerHTML = `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+            
+            // 在這裡可以使用 imageUrl 來獲取上傳後的圖片網址
+            console.log('上傳的圖片網址:', imageUrl);
+            
+            // 收集所有表單資料
+            const formData = {
+                imageUrl: imageUrl,
+                address: $('#address-text').val(),
+                model: $('#model-text').val(),
+                plate: $('#plate-text').val(),
+                fee: $('#fee-text').val(),
+                type: $('#typeScooter').hasClass('active') ? 'scooter' : 'car',
+                dateRange: $('#dateRangePicker').val()
+            };
+            
+            // TODO: 在這裡處理表單資料，例如發送到後端或區塊鏈
+            console.log('表單資料:', formData);
+            
+            alert("上傳成功！");
+        } catch (error) {
+            alert('圖片上傳失敗，請重試');
+            uploadImgBox.innerHTML = '<i class="fa-solid fa-plus"></i><span>點擊上傳圖片</span>';
+        }
     }
 })
