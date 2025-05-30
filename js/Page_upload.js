@@ -119,7 +119,18 @@ function initMap() {
 }
 
 // 當頁面載入完成時初始化地圖和日期選擇器
-$(document).ready(function() {
+$(document).ready(async function() {
+    // 檢查錢包連接狀態
+    if (!await checkIfConnected()) {
+        alert("請先連接MetaMask錢包！");
+        // 為使用者圖標按鈕添加連接錢包功能
+        $('#user-icon-btn').on('click', function() {
+            connect();
+        });
+    } else {
+        console.log("已連接錢包");
+    }
+
     // 點擊位置圖標時開啟地圖模態框
     $('#locationIcon').click(function() {
         $('#mapModal').modal('show');
@@ -148,6 +159,11 @@ $(document).ready(function() {
         dateFormat: "Y-m-d",
         minDate: "today", // 限制只能選擇今天及之後的日期
         position: "auto", // 自動調整彈出位置
+    });
+    
+    // 添加用戶圖標點擊事件
+    $('#user-icon-btn').on('click', function() {
+        connect(); // 呼叫連接函數
     });
 });
 
@@ -210,45 +226,158 @@ $('#typeCar').on("click", function () {
     $('#typeScooter').removeClass('active');
 })
 
+// 時間戳轉換函數 - 將日期字符串轉換為unix時間戳
+function dateToTimestamp(dateStr) {
+    return Math.floor(new Date(dateStr).getTime() / 1000);
+}
+
+// 檢查連接並獲取合約實例
+async function getContractInstance() {
+    // 檢查是否已連接錢包
+    if (!await checkIfConnected()) {
+        alert("請先連接錢包！");
+        return null;
+    }
+
+    try {
+        // 使用 ethers.BrowserProvider 創建 provider (Ethers v6)
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        console.log("Signer 地址：", await signer.getAddress());
+        
+        // 創建合約實例
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        return contract;
+    } catch (error) {
+        console.error("獲取合約實例時發生錯誤:", error);
+        alert("連接智能合約失敗，請確保MetaMask已連接至正確網絡！");
+        return null;
+    }
+}
+
 $('.upload-form').on("submit", async function(e){
     e.preventDefault();
+    
+    // 基本表單驗證
     if (!selectedFile){
-        alert("請上傳照片！")
+        alert("請上傳照片！");
+        return;
     } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == "" || $('#phone-text').val()==""){
         alert("請填寫所有資料！");
-    } else {
-        try {
-            // 顯示上傳中狀態
-            uploadImgBox.innerHTML = '<div class="uploading">上傳中...</div>';
-            
-            // 上傳到 Cloudinary
-            const imageUrl = await uploadToCloudinary(selectedFile);
-            
-            // 更新預覽為上傳後的圖片
-            uploadImgBox.innerHTML = `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;">`;
-            
-            // 在這裡可以使用 imageUrl 來獲取上傳後的圖片網址
-            console.log('上傳的圖片網址:', imageUrl);
-            
-            // 收集所有表單資料
-            const formData = {
-                imageUrl: imageUrl,
-                address: $('#address-text').val(),
-                model: $('#model-text').val(),
-                plate: $('#plate-text').val(),
-                phone: $('#phone-text').val(),
-                fee: $('#fee-text').val(),
-                type: $('#typeScooter').hasClass('active') ? 'scooter' : 'car',
-                dateRange: $('#dateRangePicker').val()
-            };
-            
-            // TODO: 在這裡處理表單資料，例如發送到後端或區塊鏈
-            console.log('表單資料:', formData);
-            
-            alert("上傳成功！");
-        } catch (error) {
-            alert('圖片上傳失敗，請重試');
-            uploadImgBox.innerHTML = '<i class="fa-solid fa-plus"></i><span>點擊上傳圖片</span>';
+        return;
+    } else if ($('#dateRangePicker').val() == "") {
+        alert("請選擇可預約日期範圍！");
+        return;
+    }
+    
+    try {
+        // 顯示上傳中狀態
+        uploadImgBox.innerHTML = '<div class="uploading">上傳中...</div>';
+        
+        // 上傳到 Cloudinary
+        const imageUrl = await uploadToCloudinary(selectedFile);
+        
+        // 更新預覽為上傳後的圖片
+        uploadImgBox.innerHTML = `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+        
+        console.log('上傳的圖片網址:', imageUrl);
+        
+        // 收集所有表單資料
+        const formData = {
+            imageUrl: imageUrl,
+            address: $('#address-text').val(),
+            model: $('#model-text').val(),
+            plate: $('#plate-text').val(),
+            phone: $('#phone-text').val(),
+            feeInWei: $('#fee-text').val(),
+            isscooter: $('#typeScooter').hasClass('active') ? true : false, // true為機車，false為汽車
+            dateRange: $('#dateRangePicker').val()
+        };
+        
+        // 處理日期範圍，轉換為開始和結束的時間戳
+        const dateRange = formData.dateRange.split(" 至 ");
+        formData.startDate = dateToTimestamp(dateRange[0]);
+        formData.endDate = dateRange.length > 1 ? dateToTimestamp(dateRange[1]) : startDate;
+        
+        // 處理費用，轉換為wei (Ethers v6)
+        const feeUnit = $('#fee-unit').val();
+        if (feeUnit === "Ether") {
+            formData.feeInWei = ethers.parseEther(formData.feeInWei);
+        } else {
+            // 在 Ethers v6 中我們需要使用 BigInt
+            formData.feeInWei = BigInt(formData.feeInWei);
         }
+        
+        console.log('表單資料:', formData);
+
+        // 獲取合約實例
+        const contract = await getContractInstance();
+        if (!contract) return;
+        
+        // 顯示交易狀態模態框
+        $('#txStatusModal').css('display', 'flex');
+        $('#txStatusMessage').text('請在MetaMask確認交易...');
+        
+        try {
+            // 呼叫智能合約的addCar方法
+            const tx = await contract.addCar(
+                formData.isscooter,              // _isscooter: 是否為機車
+                formData.address,                // _locate: 地址
+                formData.model,                  // _model: 型號
+                formData.plate,                  // _plate: 車牌
+                formData.feeInWei,               // _pricePerHour: 每小時價格
+                formData.startDate,              // _fdcanstart: 可租用開始日期
+                formData.endDate,                // _ldcanstart: 可租用結束日期
+                formData.imageUrl,               // _imageURL: 圖片URL
+                formData.phone                   // _phone: 聯絡電話
+            );
+            
+            // 更新模態框狀態，顯示交易正在處理中
+            $('#txStatusMessage').text('交易已提交，等待區塊鏈確認...');
+            
+            // 等待交易確認
+            const receipt = await tx.wait();
+            console.log("交易收據:", receipt);
+            
+            // 交易成功
+            $('.status-title').text('成功');
+            $('#txStatusMessage').text('車輛上傳成功！即將跳轉至個人頁面...');
+            
+            // 延遲2秒後跳轉，讓用戶可以看到成功訊息
+            setTimeout(() => {
+                window.location.href = "self.html"; // 上傳完成後跳轉到個人頁面
+            }, 2000);
+        } catch (error) {
+            // 如果在交易執行過程中發生錯誤，在這裡處理
+            console.error("交易執行錯誤:", error);
+            $('#txStatusModal').css('display', 'none');
+            
+            if (error.reason) {
+                alert(`交易失敗：${error.reason}`);
+            } else if (error.message.includes("user rejected")) {
+                alert("您已取消交易！");
+            } else {
+                alert("交易失敗，請稍後再試！");
+            }
+            // 不抛出錯誤，以免進入外層的catch塊
+            return;
+        }
+        
+    } catch (error) {
+        console.error("上傳過程中發生錯誤:", error);
+        
+        // 隱藏交易狀態模態框
+        $('#txStatusModal').css('display', 'none');
+        
+        if (error.message && error.message.includes("user rejected")) {
+            alert("您已取消交易！");
+        } else if (error.message && error.message.includes("Cloudinary")) {
+            alert("圖片上傳失敗，請檢查您的網絡連接並重試！");
+        } else {
+            alert("上傳失敗，請檢查您的輸入並重試：" + error.message);
+        }
+        
+        // 重設上傳區域，允許重新上傳
+        uploadImgBox.innerHTML = '<i class="fa-solid fa-plus"></i><span>點擊上傳圖片</span>';
     }
 })

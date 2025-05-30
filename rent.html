@@ -7,6 +7,47 @@
     <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/rent.css">
+    <style>
+        /* 加載動畫樣式 */
+        .loading-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 時間選擇器樣式 */
+        input[type="datetime-local"].success {
+            border: 2px solid #28a745 !important;
+        }
+        
+        input[type="datetime-local"].error {
+            border: 2px solid #dc3545 !important;
+        }
+    </style>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Bootstrap CDN -->
@@ -40,6 +81,12 @@
         </div>
     </header>
     <main>
+        <!-- 加載動畫 -->
+        <div id="loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>處理中，請稍候...</p>
+        </div>
+        
         <div class="rent-detail-container">
             <div class="rent-detail-img">
                 <img src="images/scooter.jpg" alt="JET SL 125cc">
@@ -86,6 +133,10 @@
     </main>
     <!-- jQuery CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- ethers.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js"></script>
+    <!-- 智能合約ABI -->
+    <script src="js/ABI.js"></script>
     <!-- 連線 -->
     <script src="js/connent.js"></script>
     <!-- 響應式漢堡選單 -->

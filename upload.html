@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/upload.css">
+    <link rel="stylesheet" href="css/upload-loader.css">
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Bootstrap CDN -->
@@ -80,7 +81,7 @@
                         <label>費用</label>
                         <div class="input-group">
                             <input type="number" id="fee-text" placeholder="請輸入費用">
-                            <select>
+                            <select id="fee-unit">
                                 <option>Ether</option>
                                 <option>wei</option>
                             </select>
@@ -114,6 +115,16 @@
             </div>
         </div>
     </div>
+
+    <!-- 交易狀態模態框 -->
+    <div class="status-modal" id="txStatusModal">
+        <div class="status-content">
+            <div class="status-title">處理中</div>
+            <div class="status-message" id="txStatusMessage">處理您的請求...</div>
+            <div class="status-spinner"></div>
+        </div>
+    </div>
+
     <!-- jQuery CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Bootstrap JS -->
@@ -126,9 +137,13 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- 繁體中文語系 -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
-    <!-- 上傳車輛 -->
-    <script src="js/Page_upload.js"></script>
+    <!-- ethers.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js"></script>
+    <!-- 智能合約ABI -->
+    <script src="js/ABI.js"></script>
     <!-- 連線 -->
     <script src="js/connent.js"></script>
+    <!-- 上傳車輛 -->
+    <script src="js/Page_upload.js"></script>
 </body>
 </html> 

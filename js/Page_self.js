@@ -1,9 +1,11 @@
-import { MyCarList } from './getMyCarsData.js';
-import { RentalsList } from './getMyRentalsData.js';
+import { MyCarList, getMyCarList } from './getMyCarsData.js';
+import { RentalsList, getMyRentalsList } from './getMyRentalsData.js';
 
 // 將資料暴露到全局作用域
 window.MyCarList = MyCarList;
 window.RentalsList = RentalsList;
+window.getMyCarList = getMyCarList;
+window.getMyRentalsList = getMyRentalsList;
 
 // 時間戳轉換為日期字串
 function timeToStr(timestamp) {
@@ -110,11 +112,11 @@ function renderOwnerData(filter) {
             const statusInfo = getStatusInfo(car.status);
             const card = $(`
                 <div class="uploaded-card">
-                    <img src="${car.imageURL}" alt="${car.model}" class="vehicle-img">
+                    <img src="${car.imageURL}" alt="${car.model}" class="vehicle-img" onerror="this.src='images/scooter.jpg'">
                     <div class="card-info">
                         <h2>${car.model}</h2>
                         <div class="status-info"> ${statusInfo.icon} &nbsp;${statusInfo.text}</div>
-                        <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot"></i></div>
+                        <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(car.locate)}', '_blank')"></i></div>
                         <div><b>車牌</b>：${car.plate}</div>
                         <div><b>計費方式</b>：$${car.pricePerHour} wei/h</div>
                         ${car.status === 3 ? `<div><b>被預約日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>` : 
@@ -166,12 +168,12 @@ function renderRentalData(filter) {
             const rentalStatusInfo = getRentalStatusInfo(rental);
             const card = $(`
                 <div class="uploaded-card">
-                    <img src="${carDetails.imageURL || 'images/scooter.jpg'}" alt="${carDetails.model || '車輛'}" class="vehicle-img">
+                    <img src="${carDetails.imageURL || 'images/scooter.jpg'}" alt="${carDetails.model || '車輛'}" class="vehicle-img" onerror="this.src='images/scooter.jpg'">
                     <div class="card-info">
                         <h2>${carDetails.model || '未知車型'}</h2>
                         <div class="status-info">${rentalStatusInfo.icon} ${rentalStatusInfo.text}</div>
                         <div><b>車主</b>：${carDetails.owner ? carDetails.owner.slice(0,8) + '...' : '未知'}</div>
-                        <div><b>地址</b>：${carDetails.locate || '未知'} <i class="fa-solid fa-location-dot"></i></div>
+                        <div><b>地址</b>：${carDetails.locate || '未知'} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(carDetails.locate || '')}', '_blank')"></i></div>
                         <div><b>車牌</b>：${carDetails.plate || '未知'}</div>
                         <div><b>計費方式</b>：$${carDetails.pricePerHour || 0} wei/h</div>
                         <div><b>預約日期</b>：${timeToStr(rental.startTimestamp)} ~ ${timeToStr(rental.endTimestamp)}</div>
@@ -226,11 +228,11 @@ function getRentalStatusInfo(rental) {
 function getButtonByStatus(car) {
     switch(car.status) {
         case 1: // 已上傳待租
-            return `<div><button class="remove-btn">下架車輛</button></div>`;
+            return `<div><button class="remove-btn" data-carid="${car.carId}">下架車輛</button></div>`;
         case 2: // 已被預約
-            return `<div><button class="confirm-btn">確認租車</button></div>`;
+            return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
-            return `<div><button class="confirm-return-btn">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${car.carId}">確認還車</button></div>`;
         case 4: // 已結束租車
             return '';
         default:
@@ -248,16 +250,16 @@ function getRentalButtonByStatus(rental) {
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
-            return `<div><button class="confirm-return-btn">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}">確認還車</button></div>`;
         }
     } else if(rental.endTimestamp > nowTimeStamp) {
         // 未過期的預約
         if(rental.renterConfirmed) {
             // 如果租戶已確認，顯示已確認按鈕（不可點擊）和取消預約按鈕
-            return `<div><button class="confirm-btn" disabled>已確認租車</button> <button class="cancel-btn">取消預約</button></div>`;
+            return `<div><button class="confirm-btn" disabled>已確認租車</button> <button class="cancel-btn" data-carid="${rental.carId}">取消預約</button></div>`;
         } else {
             // 如果租戶未確認，顯示確認租車按鈕和取消預約按鈕
-            return `<div><button class="confirm-btn">確認租車</button> <button class="cancel-btn">取消預約</button></div>`;
+            return `<div><button class="confirm-btn" data-carid="${rental.carId}">確認租車</button> <button class="cancel-btn" data-carid="${rental.carId}">取消預約</button></div>`;
         }
     } else {
         // 已過期的預約，不顯示按鈕
@@ -273,10 +275,205 @@ async function updateUserInfo() {
     $("#chainName").text(await getChainNameByID(ethObj.chainId));
 }
 
+// 添加加載動畫
+function showLoading() {
+    if (!$('#loading').length) {
+        $('body').append(`
+            <div id="loading" class="loading-container" style="display: flex;">
+                <div class="loading-spinner"></div>
+                <p>處理中，請稍候...</p>
+            </div>
+        `);
+    } else {
+        $('#loading').show();
+    }
+}
+
+function hideLoading() {
+    $('#loading').hide();
+}
+
+// 處理車輛下架操作
+async function handleRemoveCar(carId) {
+    try {
+        showLoading();
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 調用合約的 removeCar 方法
+        const tx = await contract.setCarAvailability(carId);
+        
+        // 等待交易確認
+        $('#loading p').text('交易提交中，請稍等...');
+        const receipt = await tx.wait();
+        
+        console.log("下架車輛交易收據:", receipt);
+        
+        alert('車輛已成功下架！');
+        
+        // 重新載入資料
+        await refreshData();
+        
+    } catch (error) {
+        console.error("下架車輛失敗:", error);
+        
+        if (error.message && error.message.includes("user rejected")) {
+            alert("您已取消操作！");
+        } else {
+            alert("下架車輛失敗: " + error.message);
+        }
+    } finally {
+        hideLoading();
+    }
+}
+
+// 處理確認租車操作
+async function handleConfirmRental(carId) {
+    try {
+        showLoading();
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 調用合約確認租車方法
+        const tx = await contract.confirmRental(carId);
+        
+        // 等待交易確認
+        $('#loading p').text('交易提交中，請稍等...');
+        const receipt = await tx.wait();
+        
+        console.log("確認租車交易收據:", receipt);
+        
+        alert('已確認租車！');
+        
+        // 重新載入資料
+        await refreshData();
+        
+    } catch (error) {
+        console.error("確認租車失敗:", error);
+        
+        if (error.message && error.message.includes("user rejected")) {
+            alert("您已取消操作！");
+        } else {
+            alert("確認租車失敗: " + error.message);
+        }
+    } finally {
+        hideLoading();
+    }
+}
+
+// 處理確認還車操作
+async function handleConfirmReturn(carId) {
+    try {
+        showLoading();
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 調用合約確認還車方法
+        const tx = await contract.confirmReturn(carId);
+        
+        // 等待交易確認
+        $('#loading p').text('交易提交中，請稍等...');
+        const receipt = await tx.wait();
+        
+        console.log("確認還車交易收據:", receipt);
+        
+        alert('已確認還車！');
+        
+        // 重新載入資料
+        await refreshData();
+        
+    } catch (error) {
+        console.error("確認還車失敗:", error);
+        
+        if (error.message && error.message.includes("user rejected")) {
+            alert("您已取消操作！");
+        } else {
+            alert("確認還車失敗: " + error.message);
+        }
+    } finally {
+        hideLoading();
+    }
+}
+
+// 處理取消租車操作
+async function handleCancelRental(carId) {
+    try {
+        showLoading();
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 調用合約取消租車方法
+        const tx = await contract.cancelRental(carId);
+        
+        // 等待交易確認
+        $('#loading p').text('交易提交中，請稍等...');
+        const receipt = await tx.wait();
+        
+        console.log("取消租車交易收據:", receipt);
+        
+        alert('已取消預約！');
+        
+        // 重新載入資料
+        await refreshData();
+        
+    } catch (error) {
+        console.error("取消租車失敗:", error);
+        
+        if (error.message && error.message.includes("user rejected")) {
+            alert("您已取消操作！");
+        } else {
+            alert("取消租車失敗: " + error.message);
+        }
+    } finally {
+        hideLoading();
+    }
+}
+
+// 刷新頁面資料
+async function refreshData() {
+    try {
+        showLoading();
+        
+        // 重新獲取資料
+        await getMyCarList();
+        await getMyRentalsList();
+        
+        // 更新顯示
+        const activeTab = $('.tab-btn.active').data('tab');
+        if (activeTab === 'owner-data') {
+            renderOwnerData($('#dataFilter').val());
+        } else if (activeTab === 'rental-data') {
+            renderRentalData($('#dataFilter').val());
+        }
+        
+        // 更新使用者資料
+        await updateUserInfo();
+        
+    } catch (error) {
+        console.error("刷新資料失敗:", error);
+    } finally {
+        hideLoading();
+    }
+}
+
 // 頁面載入初始化
 $(async function() {
     try {
-        const chainId = ethereum.request({ method: 'eth_chainId' });
+        showLoading();
+        
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log("鏈 ID:", chainId);
         
         // 更新用戶資料
@@ -285,11 +482,45 @@ $(async function() {
         // 設置標籤和過濾器
         setupTabsAndFilters();
         
+        // 重新獲取資料
+        await refreshData();
+        
         // 默認顯示車主資料
         $('.tab-btn[data-tab="owner-data"]').trigger('click');
         
+        // 綁定按鈕事件
+        $(document).on('click', '.remove-btn', function() {
+            const carId = $(this).data('carid');
+            if (confirm('確定要下架此車輛嗎？')) {
+                handleRemoveCar(carId);
+            }
+        });
+        
+        $(document).on('click', '.confirm-btn', function() {
+            const carId = $(this).data('carid');
+            if (confirm('確認要繼續此租車交易嗎？')) {
+                handleConfirmRental(carId);
+            }
+        });
+        
+        $(document).on('click', '.confirm-return-btn', function() {
+            const carId = $(this).data('carid');
+            if (confirm('確認車輛已歸還？')) {
+                handleConfirmReturn(carId);
+            }
+        });
+        
+        $(document).on('click', '.cancel-btn', function() {
+            const carId = $(this).data('carid');
+            if (confirm('確定要取消此預約嗎？')) {
+                handleCancelRental(carId);
+            }
+        });
+        
     } catch (error) {
         console.error("初始化錯誤:", error);
+    } finally {
+        hideLoading();
     }
 });
 

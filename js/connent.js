@@ -78,4 +78,5 @@ async function getBalance(provider, account) {
 async function createProvider() {
     provider = new ethers.BrowserProvider(window.ethereum);
     console.log("已建立 provider，鏈 ID：", await provider.getNetwork());
+    return provider;
 }

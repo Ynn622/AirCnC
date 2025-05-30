@@ -1,75 +1,61 @@
-const MyCarList = [
-    {
-        carId: 1,
-        isscooter: true,
-        owner: "0xAbC1234567890DEFabc1234567890defABC12345",
-        locate: "新北市新莊區新北大道四段199號",
-        model: "JET SL 125cc",
-        plate: "ABC-1234",
-        pricePerHour: 30,
-        fdcanstart: 1746835200,
-        ldcanstart: 1751241600,
-        status: 1, // 可出租
-        imageURL: "images/scooter.jpg",
-        phone: "0912345678"
-    },
-    {
-        carId: 2,
-        isscooter: false,
-        owner: "0x1234567890abcdef1234567890ABCDEF12345678",
-        locate: "台北市信義區松仁路123號",
-        model: "SYM DRG 158cc",
-        plate: "DEF-5678",
-        pricePerHour: 250,
-        fdcanstart: 1750608000,
-        ldcanstart: 1751212800,
-        status: 2, // 已被預約
-        imageURL: "images/DRG.jpg",
-        phone: "0922333444"
-    },
-    {
-        carId: 3,
-        isscooter: true,
-        owner: "0xaBcDEFabcdef1234567890ABCDEFabcdef123456",
-        locate: "桃園市中壢區中山路200號",
-        model: "Gogoro VIVA MIX",
-        plate: "GOG-1122",
-        pricePerHour: 50,
-        fdcanstart: 1748534400,
-        ldcanstart: 1749225600,
-        status: 3, // 正在出租
-        imageURL: "images/scooter.jpg",
-        phone: "0933111222"
-    },
-    {
-        carId: 4,
-        isscooter: false,
-        owner: "0x4567890abcdefABCDEFabcdef1234567890ABCD",
-        locate: "台中市西屯區市政路168號",
-        model: "Honda CR-V",
-        plate: "HND-9988",
-        pricePerHour: 350,
-        fdcanstart: 1746028800,
-        ldcanstart: 1746201600,
-        status: 4, // 結束租約
-        imageURL: "images/scooter.jpg",
-        phone: "0955666777"
-    },
-    {
-        carId: 5,
-        isscooter: true,
-        owner: "0xABCDEFabcdef1234567890abcdefABCDEF123456",
-        locate: "高雄市苓雅區成功一路50號",
-        model: "SYM DRG 158cc",
-        plate: "SYM-3344",
-        pricePerHour: 45,
-        fdcanstart: 1746835200,
-        ldcanstart: 1751241600,
-        status: 5, // 下架
-        imageURL: "images/DRG.jpg",
-        phone: "0966888999"
+// 從區塊鏈獲取使用者上傳的車輛資料
+// 使用 Ethers.js v6
+
+/**
+ * 獲取使用者上傳的車輛列表
+ * @returns {Promise<Array>} 車輛資料列表
+ */
+async function fetchMyCars() {
+    try {
+        // 檢查錢包是否連接
+        if (!(await checkIfConnected())) {
+            console.warn("未連接錢包，無法獲取車輛資料");
+            return [];
+        }
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 獲取使用者上傳的車輛
+        const cars = await contract.getMyCars();
+        
+        // 格式化車輛資料
+        return cars.map(car => ({
+            carId: Number(car.carId),
+            isscooter: car.isscooter,
+            owner: car.owner,
+            locate: car.locate,
+            model: car.model,
+            plate: car.plate,
+            pricePerHour: Number(car.pricePerHour),
+            fdcanstart: Number(car.fdcanstart),
+            ldcanstart: Number(car.ldcanstart),
+            status: Number(car.status),
+            imageURL: car.imageURL || 'images/scooter.jpg',
+            phone: car.phone
+        }));
+    } catch (error) {
+        console.error("獲取上傳車輛資料失敗:", error);
+        return [];
     }
-];
+}
+
+// 當檔案載入時，初始化 MyCarList
+let MyCarList = [];
+
+// 提供一個函數來獲取當前的車輛列表
+async function getMyCarList() {
+    // 如果尚未載入或需要強制刷新，則重新獲取資料
+    MyCarList = await fetchMyCars();
+    return MyCarList;
+}
+
+// 初始化獲取資料
+getMyCarList().then(cars => {
+    console.log(`已獲取${cars.length}輛車資料`);
+});
 
 // 導出資料供其他檔案使用
-export { MyCarList }; 
+export { MyCarList, getMyCarList }; 

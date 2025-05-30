@@ -1,38 +1,58 @@
-const RentalsList = [
-    {
-        carId: 1,
-        renter: "0x1111222233334444555566667777888899990000",
-        startTimestamp: 1748534400,
-        endTimestamp: 1749225600,     
-        ftotalCost: 90,
-        isActive: true,              // 租賃進行中
-        renterConfirmed: true,
-        ownerConfirmed: true,
-        extraFeePaid: false
-    },
-    {
-        carId: 2,
-        renter: "0x2222333344445555666677778888999900001111",
-        startTimestamp: 1750608000,
-        endTimestamp: 1751212800,
-        ftotalCost: 10000,
-        isActive: false,
-        renterConfirmed: false,
-        ownerConfirmed: false,
-        extraFeePaid: false
-    },
-    {
-        carId: 3,
-        renter: "0x3333444455556666777788889999000011112222",
-        startTimestamp: 1746028800,
-        endTimestamp: 1746201600,
-        ftotalCost: 360,
-        isActive: false,             // 已結束
-        renterConfirmed: false,      // 租客已還車
-        ownerConfirmed: false,       // 車主已確認還車
-        extraFeePaid: true           // 有支付額外費用（例如超時）
+// 從區塊鏈獲取用戶的租賃資料
+// 使用 Ethers.js v6
+
+/**
+ * 獲取使用者租賃資料
+ * @returns {Promise<Array>} 租賃資料列表
+ */
+async function fetchMyRentals() {
+    try {
+        // 檢查錢包是否連接
+        if (!(await checkIfConnected())) {
+            console.warn("未連接錢包，無法獲取租賃資料");
+            return [];
+        }
+        
+        // 創建合約實例
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        
+        // 獲取使用者的所有租賃
+        const rentals = await contract.getMyRentals();
+        
+        // 格式化租賃資料
+        return rentals.map(rental => ({
+            carId: Number(rental.carId),
+            renter: rental.renter,
+            startTimestamp: Number(rental.startTimestamp),
+            endTimestamp: Number(rental.endTimestamp),
+            ftotalCost: Number(rental.ftotalCost),
+            isActive: rental.isActive,
+            renterConfirmed: rental.renterConfirmed,
+            ownerConfirmed: rental.ownerConfirmed,
+            extraFeePaid: rental.extraFeePaid
+        }));
+    } catch (error) {
+        console.error("獲取租賃資料失敗:", error);
+        return [];
     }
-];
+}
+
+// 當檔案載入時，初始化 RentalsList
+let RentalsList = [];
+
+// 提供一個函數來獲取當前的租賃列表
+async function getMyRentalsList() {
+    // 重新獲取資料
+    RentalsList = await fetchMyRentals();
+    return RentalsList;
+}
+
+// 初始化獲取資料
+getMyRentalsList().then(rentals => {
+    console.log(`已獲取${rentals.length}筆租賃資料`);
+});
 
 // 導出資料供其他檔案使用
-export { RentalsList }; 
+export { RentalsList, getMyRentalsList }; 
