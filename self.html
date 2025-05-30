@@ -54,42 +54,26 @@
                 </div>
             </div>
             <div class="profile-right col-md-8 col-sm-12">
-                <div>
-                    <div class="section-title">租車列表</div>
-                    <div class="rent-list">
-                        <div class="rent-card">
-                            <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                            <div class="card-info">
-                                <h2>JET SL 125cc</h2>
-                                <div>車主：高潮貴</div>
-                                <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                                <div>車牌：XXX-1234</div>
-                                <div>計費方式：$30 wei/h</div>
-                                <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                                <button class="cancel-btn">取消租車</button>
-                            </div>
-                        </div>
+                <div class="profile-tabs">
+                    <button class="tab-btn active" data-tab="owner-data">車主資料</button>
+                    <button class="tab-btn" data-tab="rental-data">已租資料</button>
+                    
+                    <div class="filter-container">
+                        <select id="dataFilter" class="data-filter">
+                            <option value="all">全部</option>
+                            <!-- 選項將由 JavaScript 動態更新 -->
+                        </select>
                     </div>
                 </div>
-                <div>
-                    <div class="section-title">已上傳車輛</div>
-                    <div class="uploaded-list">
-                        <div class="uploaded-card">
-                            <img src="images/scooter.jpg" alt="JET SL 125cc" class="vehicle-img">
-                            <div class="card-info">
-                                <h2>JET SL 125cc</h2>
-                                <div>地址：台北市士林區雨聲街87號 <i class="fa-solid fa-location-dot"></i></div>
-                                <div>車牌：XXX-1234</div>
-                                <div>計費方式：$30 wei/h</div>
-                                <div>可用車日期：2025/5/12 - 2025/12/31</div>
-                                <div>
-                                    <button class="edit-btn">修改資料</button>
-                                    <button class="remove-btn">下架車輛</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
+                <div id="ownerDataContainer" class="data-container active">
+                    <!-- 車主資料內容將由 JavaScript 動態生成 -->
                 </div>
+                
+                <div id="rentalDataContainer" class="data-container">
+                    <!-- 已租資料內容將由 JavaScript 動態生成 -->
+                </div>
+            </div>
             </div>
         </div>
     </main>
@@ -106,37 +90,12 @@
 <script src="js/connent.js"></script>
 <!-- 響應式漢堡選單 -->
 <script type="module" src="js/menu.js"></script>
+<!-- 個人頁面專用JS -->
+<script type="module" src="js/Page_self.js"></script>
 <script>
-    // 更新個人資料
-    async function updateUserInfo(){
-        const userName = await getAccount();
-        $("#userName").text(userName.slice(0, 6) + "..." + userName.slice(-4));
-        $("#userBalance").text(await getBalance(provider, userName)+" Ether");
-        $("#chainName").text(await getChainNameByID(ethObj.chainId));
-    }
-</script>
-<script>
+    // 提供全局變數供 Page_self.js 使用
     var ethObj = window.ethereum;
     createProvider();
-    $(async function(){
-        const chainId = ethereum.request({ method: 'eth_chainId' });
-        console.log(chainId.PromiseResult);
-        await updateUserInfo();
-    });
-
-    // 切換網路
-    ethereum.on("chainChanged", async function(accounts){
-        console.log("切換網路", accounts);
-        createProvider();
-        await updateUserInfo();
-    });
-
-    // 切換帳號
-    ethereum.on("accountsChanged", async function(accounts){
-        console.log("切換帳號", accounts);
-        createProvider();
-        await updateUserInfo();
-    });
 
 </script>
 </html> 

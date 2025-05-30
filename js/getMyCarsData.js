@@ -18,13 +18,13 @@ const MyCarList = [
         isscooter: false,
         owner: "0x1234567890abcdef1234567890ABCDEF12345678",
         locate: "台北市信義區松仁路123號",
-        model: "Toyota Yaris",
+        model: "SYM DRG 158cc",
         plate: "DEF-5678",
         pricePerHour: 250,
-        fdcanstart: 1747008000,
-        ldcanstart: 1751400000,
+        fdcanstart: 1750608000,
+        ldcanstart: 1751212800,
         status: 2, // 已被預約
-        imageURL: "images/yaris.jpg",
+        imageURL: "images/DRG.jpg",
         phone: "0922333444"
     },
     {
@@ -35,10 +35,10 @@ const MyCarList = [
         model: "Gogoro VIVA MIX",
         plate: "GOG-1122",
         pricePerHour: 50,
-        fdcanstart: 1746900000,
-        ldcanstart: 1751300000,
+        fdcanstart: 1748534400,
+        ldcanstart: 1749225600,
         status: 3, // 正在出租
-        imageURL: "images/gogoro.jpg",
+        imageURL: "images/scooter.jpg",
         phone: "0933111222"
     },
     {
@@ -49,10 +49,10 @@ const MyCarList = [
         model: "Honda CR-V",
         plate: "HND-9988",
         pricePerHour: 350,
-        fdcanstart: 1746800000,
-        ldcanstart: 1751200000,
+        fdcanstart: 1746028800,
+        ldcanstart: 1746201600,
         status: 4, // 結束租約
-        imageURL: "images/crv.jpg",
+        imageURL: "images/scooter.jpg",
         phone: "0955666777"
     },
     {
@@ -60,13 +60,13 @@ const MyCarList = [
         isscooter: true,
         owner: "0xABCDEFabcdef1234567890abcdefABCDEF123456",
         locate: "高雄市苓雅區成功一路50號",
-        model: "SYM DRG 158",
+        model: "SYM DRG 158cc",
         plate: "SYM-3344",
         pricePerHour: 45,
-        fdcanstart: 1746950000,
-        ldcanstart: 1751350000,
+        fdcanstart: 1746835200,
+        ldcanstart: 1751241600,
         status: 5, // 下架
-        imageURL: "images/drg.jpg",
+        imageURL: "images/DRG.jpg",
         phone: "0966888999"
     }
 ];

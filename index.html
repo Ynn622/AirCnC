@@ -81,11 +81,11 @@
                 <img src="${vehicle.image}" alt="${vehicle.name}" class="vehicle-img">
                 <div class="card-info">
                     <h2>${vehicle.model}</h2>
-                    <div><span>車主：</span>${vehicle.owner.slice(0,8)}</div>
-                    <div><span>地點：</span>${vehicle.location} <i class="fa-solid fa-location-dot"></i></div>
-                    <div><span>車牌：</span>${vehicle.plate} </div>
-                    <div><span>計費方式：</span>$${vehicle.pricePerHour} wei/h</div>
-                    <div><span>可租借日期：</span>${timeToStr(vehicle.startTimestamp)} ~ ${timeToStr(vehicle.endTimestamp)}</div>
+                    <div><span><b>車主</b>：</span>${vehicle.owner.slice(0,8)}</div>
+                    <div><span><b>地點</b>：</span>${vehicle.location} <i class="fa-solid fa-location-dot"></i></div>
+                    <div><span><b>車牌</b>：</span>${vehicle.plate} </div>
+                    <div><span><b>計費方式</b>：</span>$${vehicle.pricePerHour} wei/h</div>
+                    <div><span><b>可租借日期</b>：</span>${timeToStr(vehicle.startTimestamp)} ~ ${timeToStr(vehicle.endTimestamp)}</div>
                     <button class="rent-btn" onclick="window.location.href='rent.html?id=${vehicle.id}'" ${vehicle.isActive ? 'disabled' : ''}>
                         ${vehicle.isActive ? '已出租' : '預約租車'}
                     </button>

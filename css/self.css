@@ -42,7 +42,6 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 40px;
 }
 
 .section-title {
@@ -96,7 +95,7 @@
     color: #fff;
 }
 
-.edit-btn {
+.confirm-return-btn {
     background: #e0c97a;
     color: #222;
     font-size: 1.1em;
@@ -110,7 +109,7 @@
     transition: background 0.2s;
 }
 
-.edit-btn:hover {
+.confirm-return-btn:hover {
     background: #bfae5e;
     color: #fff;
 }
@@ -131,4 +130,87 @@
 .remove-btn:hover {
     background: #b88b8b;
     color: #fff;
+}
+
+/* 標籤和過濾器樣式 */
+.profile-tabs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: #eee;
+    color: #555;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px 5px 0 0;
+    padding: 12px 25px;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: #5d9eff;
+    color: #fff;
+}
+
+.filter-container {
+    margin-left: auto;
+}
+
+.data-filter {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 0.9em;
+}
+
+.status-info {
+    display: inline-block;
+    background-color: #eeeeee;
+    border-radius: 15px;
+    padding: 3px 10px;
+    margin-bottom: 5px;
+    color: #444;
+    font-size: 0.9em;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-style: italic;
+}
+
+.confirm-btn {
+    background: #6bbd6e;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 30px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.confirm-btn:hover {
+    background: #5aa95d;
+}
+
+.data-container {
+    display: none;
+}
+
+.data-container.active {
+    display: block;
 }
