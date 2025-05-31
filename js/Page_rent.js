@@ -92,7 +92,7 @@ async function getContractInstance() {
 async function getCarDetails(carId) {
     try {
         // 顯示加載中動畫
-        $('#loading').show();
+        showLoading();
         
         // 獲取合約實例（只讀）
         const provider = new ethers.BrowserProvider(window.ethereum);
@@ -124,7 +124,7 @@ async function getCarDetails(carId) {
         return null;
     } finally {
         // 隱藏加載中動畫
-        $('#loading').hide();
+        hideLoading();
     }
 }
 
@@ -257,7 +257,7 @@ $(document).ready(async function() {
                 }
                 
                 // 顯示處理中狀態
-                $('#loading').show();
+                showLoading();
                 
                 // 獲取合約實例
                 const contract = await getContractInstance();
@@ -299,7 +299,7 @@ $(document).ready(async function() {
                     alert("預約租車失敗: " + error.message);
                 }
             } finally {
-                $('#loading').hide();
+                hideLoading();
             }
         });
 

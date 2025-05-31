@@ -27,13 +27,13 @@ async function getContractInstance() {
 async function fetchAvailableCars() {
     try {
         // 顯示加載中動畫
-        document.getElementById('loading').style.display = 'flex';
+        showLoading();
         
         // 獲取合約實例
         const contract = await getContractInstance();
         if (!contract) {
             console.error("無法獲取合約實例");
-            return;
+            return "Error";
         }
 
         // 調用合約的 getAvailableCars 方法獲取可用車輛 ID 列表
@@ -76,7 +76,7 @@ async function fetchAvailableCars() {
         return [];
     } finally {
         // 隱藏加載中動畫
-        document.getElementById('loading').style.display = 'none';
+        hideLoading();
     }
 }
 
@@ -87,6 +87,13 @@ async function generateRentalCards() {
         // 獲取車輛數據
         const vehicles = await fetchAvailableCars();
         
+        // 檢查是否有錯誤
+        if (vehicles === "Error") {
+            rentalListContainer.innerHTML = '<div class="error-message">載入時發生錯誤<br>請先安裝MetaMask!</div>';
+            return;
+        }
+
+        // 檢查是否有可用車輛
         if (!vehicles || vehicles.length === 0) {
             rentalListContainer.innerHTML = '<div class="no-cars-message">目前沒有可用的車輛</div>';
             return;
@@ -100,7 +107,7 @@ async function generateRentalCards() {
             const card = document.createElement('div');
             card.className = 'rent-card col-md-6';
             card.innerHTML = `
-                <img src="${vehicle.image}" alt="${vehicle.model}" class="vehicle-img" onerror="this.onerror=null;this.src='images/scooter.jpg';">
+                <img src="${vehicle.image}" alt="${vehicle.model}" class="vehicle-img" onerror="this.onerror=null;this.src='images/Noimage.png';">
                 <div class="card-info">
                     <h2>${vehicle.model}</h2>
                     <div><span><b>車型</b>：</span>${vehicle.isscooter ? '機車' : '汽車'}</div>

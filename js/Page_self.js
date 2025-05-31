@@ -275,24 +275,6 @@ async function updateUserInfo() {
     $("#chainName").text(await getChainNameByID(ethObj.chainId));
 }
 
-// 添加加載動畫
-function showLoading() {
-    if (!$('#loading').length) {
-        $('body').append(`
-            <div id="loading" class="loading-container" style="display: flex;">
-                <div class="loading-spinner"></div>
-                <p>處理中，請稍候...</p>
-            </div>
-        `);
-    } else {
-        $('#loading').show();
-    }
-}
-
-function hideLoading() {
-    $('#loading').hide();
-}
-
 // 處理車輛下架操作
 async function handleRemoveCar(carId) {
     try {

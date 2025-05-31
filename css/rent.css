@@ -43,7 +43,6 @@ body {
 }
 .rent-detail-table {
     display: flex;
-    gap: 60px;
     font-size: 1.1em;
     margin-bottom: 10px;
 }
@@ -63,7 +62,7 @@ body {
     box-shadow: 0 2px 8px #0001;
     padding: 20px 30px 24px 30px;
     margin-top: 18px;
-    max-width: 420px;
+    max-width: 450px;
 }
 .rent-form-title {
     font-size: 1.1em;
