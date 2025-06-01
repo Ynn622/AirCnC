@@ -20,7 +20,7 @@ async function fetchMyCars() {
         
         // 獲取使用者上傳的車輛
         const cars = await contract.getMyCars();
-        
+
         // 格式化車輛資料
         return cars.map(car => ({
             carId: Number(car.carId),
@@ -33,7 +33,7 @@ async function fetchMyCars() {
             fdcanstart: Number(car.fdcanstart),
             ldcanstart: Number(car.ldcanstart),
             status: Number(car.status),
-            imageURL: car.imageURL || 'images/scooter.jpg',
+            imageURL: car.imageURL || 'images/NoImage.png',
             phone: car.phone
         }));
     } catch (error) {
@@ -49,6 +49,8 @@ let MyCarList = [];
 async function getMyCarList() {
     // 如果尚未載入或需要強制刷新，則重新獲取資料
     MyCarList = await fetchMyCars();
+    console.log(`已獲取 ${MyCarList.length} 輛上傳車輛資料，當前車輛列表:`, MyCarList);
+    // 返回當前的車輛列表
     return MyCarList;
 }
 

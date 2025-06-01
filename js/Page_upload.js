@@ -122,7 +122,7 @@ function initMap() {
 $(document).ready(async function() {
     // 檢查錢包連接狀態
     if (!await checkIfConnected()) {
-        alert("請先點擊右上角圖示，連接MetaMask錢包！");
+        alert("請先點擊右上角「個人頁面」圖示，連接MetaMask錢包！");
         window.location.href = "index.html"; // 如果未連接，跳轉到首頁
     } else {
         console.log("已連接錢包");
@@ -152,7 +152,7 @@ $(document).ready(async function() {
     flatpickr("#dateRangePicker", {
         mode: "range",
         showMonths: 2, // 顯示兩個月份
-        locale: "zh", // 如果需要繁體中文
+        locale: "zh", // 繁體中文
         dateFormat: "Y-m-d",
         minDate: "today", // 限制只能選擇今天及之後的日期
         position: "auto", // 自動調整彈出位置
@@ -237,9 +237,12 @@ function convertToWei(valueStr, unit) {
     return ethers.parseUnits(valueStr, unitDecimals[unit]);
   }
 
-// 時間戳轉換函數 - 將日期字符串轉換為unix時間戳
+// 時間戳轉換函數 - 將日期字符串轉換為台灣時區(GMT+8)的unix時間戳
 function dateToTimestamp(dateStr) {
-    return Math.floor(new Date(dateStr).getTime() / 1000);
+    const date = new Date(dateStr);
+    // 設定時間為當天的早上8點 (台灣時區的0點)
+    date.setHours(0, 0, 0, 0);
+    return Math.floor(date.getTime() / 1000);
 }
 
 // 檢查連接並獲取合約實例
@@ -305,10 +308,10 @@ $('.upload-form').on("submit", async function(e){
             dateRange: $('#dateRangePicker').val()
         };
         
-        // 處理日期範圍，轉換為開始和結束的時間戳
+        // 處理日期範圍，轉換為開始和結束的時間戳（台灣時區）
         const dateRange = formData.dateRange.split(" 至 ");
         formData.startDate = dateToTimestamp(dateRange[0]);
-        formData.endDate = dateRange.length > 1 ? dateToTimestamp(dateRange[1]) : startDate;
+        formData.endDate = dateRange.length > 1 ? dateToTimestamp(dateRange[1]) : formData.startDate;
         
         // 處理費用，轉換為wei (Ethers v6)
         const feeUnit = $('#fee-unit').val();

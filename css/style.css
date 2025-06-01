@@ -69,6 +69,11 @@ nav a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.user-icon:hover {
+    background: #c2b6ff;
 }
 
 main {

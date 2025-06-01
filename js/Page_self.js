@@ -51,8 +51,10 @@ function setupTabsAndFilters() {
         const activeTab = $('.tab-btn.active').data('tab');
         
         if(activeTab === 'owner-data') {
+            console.log("過濾車主資料，選擇的過濾器:", filterValue);
             renderOwnerData(filterValue);
         } else if(activeTab === 'rental-data') {
+            console.log("過濾租賃資料，選擇的過濾器:", filterValue);
             renderRentalData(filterValue);
         }
     });
@@ -119,8 +121,8 @@ function renderOwnerData(filter) {
                         <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(car.locate)}', '_blank')"></i></div>
                         <div><b>車牌</b>：${car.plate}</div>
                         <div><b>計費方式</b>：$${car.pricePerHour} wei/h</div>
-                        ${car.status === 3 ? `<div><b>被預約日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>` : 
-                                         `<div><b>提供日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>`}
+                        ${(car.status===2 || car.status===3) ? `<div><b>被預約日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>` : 
+                                        `<div><b>提供日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>`}
                         ${getButtonByStatus(car)}
                     </div>
                 </div>
@@ -144,7 +146,6 @@ function renderRentalData(filter) {
     RentalsList.forEach(rental => {
         // 使用租賃數據中包含的車輛詳情
         const carDetails = rental.carDetails || {};
-        console.log("租賃資料:", rental);
 
         // 根據 filter 條件過濾
         let shouldShow = false;
@@ -158,10 +159,10 @@ function renderRentalData(filter) {
                 shouldShow = rental.isActive; // 租賃進行中
                 break;
             case 'reserved':
-                shouldShow = !rental.carDetails.status === 2; // 已預約未開始
+                shouldShow = rental.carDetails.status === 2; // 已預約未開始
                 break;
             case 'history':
-                shouldShow = !rental.carDetails.status === 4; // 已結束
+                shouldShow = rental.carDetails.status === 4; // 已結束
                 break;
         }
         
@@ -175,6 +176,7 @@ function renderRentalData(filter) {
                         <div class="status-info">${rentalStatusInfo.icon} ${rentalStatusInfo.text}</div>
                         <div><b>車主</b>：${carDetails.owner ? carDetails.owner.slice(0,8) + '...' : '未知'}</div>
                         <div><b>地址</b>：${carDetails.locate || '未知'} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(carDetails.locate || '')}', '_blank')"></i></div>
+                        <div><b>聯絡電話</b>：${carDetails.phone || '未知'}</div>
                         <div><b>車牌</b>：${carDetails.plate || '未知'}</div>
                         <div><b>計費方式</b>：$${carDetails.pricePerHour || 0} wei/h</div>
                         <div><b>預約日期</b>：${timeToStr(rental.startTimestamp)} ~ ${timeToStr(rental.endTimestamp)}</div>
@@ -247,7 +249,7 @@ function getRentalButtonByStatus(rental) {
     const nowTimeStamp = Math.floor(Date.now() / 1000);
     
     if(rental.isActive) {
-        if(rental.renterConfirmed === false) {
+        if(!rental.renterConfirmed) {
             // 如果租賃活躍但租戶確認為假，顯示「已確認還車」按鈕
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
@@ -318,14 +320,16 @@ async function handleRemoveCar(carId) {
 async function handleConfirmRental(carId) {
     try {
         showLoading();
-        
+
+        console.log("開始確認租車，車輛ID:", carId);
+
         // 創建合約實例
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
         
         // 調用合約確認租車方法
-        const tx = await contract.confirmRental(carId);
+        const tx = await contract.startRental(carId);
         
         // 等待交易確認
         $('#loading p').text('交易提交中，請稍等...');

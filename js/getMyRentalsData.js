@@ -21,9 +21,7 @@ async function fetchMyRentals() {
         // 獲取使用者的所有租賃
         const userRentals = await contract.getMyRentals();
         const carIds = userRentals.map(rental => Number(rental.carId));
-        
-        console.log("用戶租賃車輛ID列表:", carIds);
-        
+
         // 從租賃記錄中提取基本數據，並使用 getCar 方法獲取車輛詳情
         const rentalsData = [];
         for (let i = 0; i < userRentals.length; i++) {
@@ -33,8 +31,6 @@ async function fetchMyRentals() {
             try {
                 // 使用 getCar 獲取車輛詳情
                 const car = await contract.getCar(carId);
-                
-                console.log(`獲取車輛ID ${carId} 的車輛詳情:`, car);
                 
                 // 將租賃資料與車輛詳情合併
                 rentalsData.push({
@@ -68,8 +64,6 @@ async function fetchMyRentals() {
                 console.error(`獲取車輛ID ${carId} 的詳情時發生錯誤:`, error);
             }
         }
-        
-        console.log(`已獲取 ${rentalsData.length} 筆租賃與車輛詳情`);
         return rentalsData;
     } catch (error) {
         console.error("獲取租賃資料失敗:", error);
@@ -84,6 +78,8 @@ let RentalsList = [];
 async function getMyRentalsList() {
     // 重新獲取資料
     RentalsList = await fetchMyRentals();
+    console.log(`已獲取 ${RentalsList.length} 筆租賃資料，當前租賃列表:`, RentalsList);
+    // 返回當前的租賃列表
     return RentalsList;
 }
 

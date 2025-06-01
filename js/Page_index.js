@@ -24,7 +24,7 @@ async function getContractInstance() {
 }
 
 // 獲取所有可用車輛
-async function fetchAvailableCars() {
+async function fetchAvailableCars(isscooter) {
     try {
         // 顯示加載中動畫
         showLoading();
@@ -47,23 +47,24 @@ async function fetchAvailableCars() {
         for (const carId of availableCarIds) {
             try {
                 const car = await contract.getCar(carId);
-                
-                // 將合約返回的數據轉換為易於使用的對象
-                vehiclesData.push({
-                    id: Number(car.carId),
-                    isscooter: car.isscooter,
-                    model: car.model,
-                    pricePerHour: car.pricePerHour.toString(),
-                    location: car.locate,
-                    image: car.imageURL,
-                    owner: car.owner,
-                    plate: car.plate,
-                    phone: car.phone,
-                    status: Number(car.status),
-                    startTimestamp: Number(car.fdcanstart),
-                    endTimestamp: Number(car.ldcanstart),
-                    isActive: Number(car.status) === 2 || Number(car.status) === 3  // 2=已預約, 3=使用中
-                });
+                if (car.isscooter===isscooter) {
+                    // 將合約返回的數據轉換為易於使用的對象
+                    vehiclesData.push({
+                        id: Number(car.carId),
+                        isscooter: car.isscooter,
+                        model: car.model,
+                        pricePerHour: car.pricePerHour.toString(),
+                        location: car.locate,
+                        image: car.imageURL,
+                        owner: car.owner,
+                        plate: car.plate,
+                        phone: car.phone,
+                        status: Number(car.status),
+                        startTimestamp: Number(car.fdcanstart),
+                        endTimestamp: Number(car.ldcanstart),
+                        isActive: Number(car.status) === 2 || Number(car.status) === 3  // 2=已預約, 3=使用中
+                    });
+                }
             } catch (error) {
                 console.error(`獲取車輛 ID ${carId} 的詳細信息時發生錯誤:`, error);
             }
@@ -85,7 +86,7 @@ async function generateRentalCards() {
     try {
         const rentalListContainer = document.getElementById('rentalList');
         // 獲取車輛數據
-        const vehicles = await fetchAvailableCars();
+        const vehicles = await fetchAvailableCars(true); // false 代表汽車，true 代表機車
         
         // 檢查是否有錯誤
         if (vehicles === "Error") {
@@ -110,9 +111,9 @@ async function generateRentalCards() {
                 <img src="${vehicle.image}" alt="${vehicle.model}" class="vehicle-img" onerror="this.onerror=null;this.src='images/Noimage.png';">
                 <div class="card-info">
                     <h2>${vehicle.model}</h2>
-                    <div><span><b>車型</b>：</span>${vehicle.isscooter ? '機車' : '汽車'}</div>
                     <div><span><b>車主</b>：</span>${vehicle.owner.slice(0,8)}...</div>
-                    <div><span><b>地點</b>：</span>${vehicle.location} <i class="fa-solid fa-location-dot"></i></div>
+                    <div style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vehicle.location)}', '_blank')"><span><b>地點</b>：</span>${vehicle.location}</div>
+                    <div><span><b>聯絡電話</b>：</span>${vehicle.phone}</div>
                     <div><span><b>車牌</b>：</span>${vehicle.plate} </div>
                     <div><span><b>計費方式</b>：</span>${vehicle.pricePerHour} wei/h</div>
                     <div><span><b>可租借日期</b>：</span>${timeToStr(vehicle.startTimestamp)} ~ ${timeToStr(vehicle.endTimestamp)}</div>

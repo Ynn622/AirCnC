@@ -171,14 +171,25 @@ $(document).ready(async function() {
         const endDate = timeToStr(vehicle.endTimestamp);
         $('.rent-detail-date span').eq(1).text(`${startDate} - ${endDate}`);
 
-        // 設定日期時間選擇器的範圍
-        const startDateTime = new Date(vehicle.startTimestamp * 1000);
-        const endDateTime = new Date(vehicle.endTimestamp * 1000);
+        if (vehicle.status !== 1) {
+            alert("此車輛目前不可租用，可能已被他人預約。");
+            window.location.href = 'index.html';
+        }
         
+        // 設定日期時間選擇器的範圍
+        let startDateTime = new Date(vehicle.startTimestamp * 1000);
+        const endDateTime = new Date(vehicle.endTimestamp * 1000);
+        const currentDateTime = new Date();
+
+        currentDateTime.setMinutes(0, 0, 0);  // 將當前時間的分鐘、秒和毫秒設為0
+        currentDateTime.setHours(currentDateTime.getHours() + 9); // 調整為台灣時間
+        // 如果當前時間早於可租用開始時間，則使用可租用開始時間
+        startDateTime = startDateTime > currentDateTime ? startDateTime : currentDateTime
+
         // 設定最小和最大日期時間
         const minDateTime = startDateTime.toISOString().slice(0, 16);
         const maxDateTime = endDateTime.toISOString().slice(0, 16);
-        
+
         $('#startDateTime').attr('min', minDateTime);
         $('#startDateTime').attr('max', maxDateTime);
         $('#endDateTime').attr('min', minDateTime);
