@@ -100,7 +100,7 @@
 .upload-form input[type="number"],
 .upload-form input[type="date"],
 .upload-form select {
-    width: 95%;
+    width: 100%;
     padding: 10px 12px;
     font-size: 1.1em;
     border-radius: 6px;

@@ -223,6 +223,20 @@ $('#typeCar').on("click", function () {
     $('#typeScooter').removeClass('active');
 })
 
+// 轉換eth單位函數 - 將字符串轉換為wei
+function convertToWei(valueStr, unit) {
+    const unitDecimals = {
+        Ether: 18,
+        Finney: 15,
+        Szabo: 12,
+        Gwei: 9,
+        Mwei: 6,
+        Kwei: 3,
+        wei: 0,
+    };
+    return ethers.parseUnits(valueStr, unitDecimals[unit]);
+  }
+
 // 時間戳轉換函數 - 將日期字符串轉換為unix時間戳
 function dateToTimestamp(dateStr) {
     return Math.floor(new Date(dateStr).getTime() / 1000);
@@ -298,12 +312,8 @@ $('.upload-form').on("submit", async function(e){
         
         // 處理費用，轉換為wei (Ethers v6)
         const feeUnit = $('#fee-unit').val();
-        if (feeUnit === "Ether") {
-            formData.feeInWei = ethers.parseEther(formData.feeInWei);
-        } else {
-            // 在 Ethers v6 中我們需要使用 BigInt
-            formData.feeInWei = BigInt(formData.feeInWei);
-        }
+
+        formData.feeInWei = convertToWei(formData.feeInWei, feeUnit);
         
         console.log('表單資料:', formData);
 
