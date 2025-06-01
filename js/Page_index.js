@@ -70,7 +70,7 @@ async function fetchAvailableCars(isscooter) {
             }
         }
 
-        console.log("獲取的車輛數據:", vehiclesData);
+        console.log("篩選的車輛數據:", vehiclesData);
         return vehiclesData;
     } catch (error) {
         console.error("獲取可用車輛時發生錯誤:", error);
@@ -82,11 +82,11 @@ async function fetchAvailableCars(isscooter) {
 }
 
 // 動態生成租車卡片
-async function generateRentalCards() {
+async function generateRentalCards(isscooter) {
     try {
         const rentalListContainer = document.getElementById('rentalList');
         // 獲取車輛數據
-        const vehicles = await fetchAvailableCars(true); // false 代表汽車，true 代表機車
+        const vehicles = await fetchAvailableCars(isscooter); // false 代表汽車，true 代表機車
         
         // 檢查是否有錯誤
         if (vehicles === "Error") {
@@ -136,7 +136,10 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('user-icon-btn').addEventListener('click', function() {
         connect();
     });
-    
-    // 獲取和顯示車輛信息
-    generateRentalCards();
+    // 從 URL 獲取 - 是否為機車的參數
+    const urlParams = new URLSearchParams(window.location.search);
+    const isScooter = urlParams.get('isScooter') === 'false' ? false : true;
+    console.log(isScooter)
+    // 獲取&顯示 車輛信息
+    generateRentalCards(isScooter);
 });
