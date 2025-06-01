@@ -440,9 +440,6 @@ async function refreshData() {
             renderRentalData($('#dataFilter').val());
         }
         
-        // 更新使用者資料
-        await updateUserInfo();
-        
     } catch (error) {
         console.error("刷新資料失敗:", error);
     } finally {
@@ -529,8 +526,19 @@ if (window.ethereum) {
 
     // 切換帳號
     window.ethereum.on("accountsChanged", async function(accounts) {
-        console.log("切換帳號", accounts);
+        console.log("切換帳號中...");
         createProvider();
-        await updateUserInfo();
+        try {
+            await updateUserInfo();
+
+            // 重新獲取資料
+            await refreshData();
+
+            // 默認顯示車主資料
+            $('.tab-btn[data-tab="owner-data"]').trigger('click');
+        }
+        catch (error) {
+            console.error("更新用戶資料失敗:", error);
+        }
     });
 }

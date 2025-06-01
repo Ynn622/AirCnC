@@ -122,11 +122,8 @@ function initMap() {
 $(document).ready(async function() {
     // 檢查錢包連接狀態
     if (!await checkIfConnected()) {
-        alert("請先連接MetaMask錢包！");
-        // 為使用者圖標按鈕添加連接錢包功能
-        $('#user-icon-btn').on('click', function() {
-            connect();
-        });
+        alert("請先點擊右上角圖示，連接MetaMask錢包！");
+        window.location.href = "index.html"; // 如果未連接，跳轉到首頁
     } else {
         console.log("已連接錢包");
     }

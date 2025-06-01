@@ -230,6 +230,7 @@ $(document).ready(async function() {
             
             if (!isConnected) {
                 alert("請先連接MetaMask錢包以預約租車！");
+                connect();
                 return;
             }
             

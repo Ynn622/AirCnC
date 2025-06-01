@@ -5,6 +5,3 @@ const nav = $('#mainNav');
 hamburger.click(function () {
     nav.toggleClass('active');
 })
-
-// 連線
-$("#user-icon-btn").click(connect);

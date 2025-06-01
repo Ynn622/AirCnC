@@ -14,7 +14,14 @@ async function connect(){
                 console.log(account);
                 window.location.href = "self.html";
             } catch (error) {
-                alert("連接失敗，請稍後再試！");
+                if (error.code === 4001) {
+                    // 使用者拒絕了連接請求
+                    console.log("使用者拒絕了連接請求");
+                    alert("連接被拒絕，請重新嘗試！");
+                } else {
+                    console.error("連接錢包失敗:", error);
+                    alert("連接失敗，請稍後再試！");
+                }
             }
         } else {
             alert("請先安裝MetaMask");
@@ -65,6 +72,11 @@ async function getChainNameByID(chainid) {
 async function getAccount() {
     const accounts = await ethereum.request({ method: 'eth_accounts' });
     console.log("錢包帳號：",accounts);
+    if (accounts.length === 0) {
+        console.log("沒有可用的帳號");
+        alert("沒有可用的帳號，請先連接錢包");
+        window.location.href = "index.html";
+    }
     return accounts[0];
 }
 
