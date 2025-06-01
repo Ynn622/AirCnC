@@ -142,9 +142,10 @@ function renderRentalData(filter) {
     
     // 這裡從 RentalsList 獲取資料並根據 filter 進行過濾
     RentalsList.forEach(rental => {
-        // 從 rentalList 中找到對應的車輛詳情
-        const carDetails = MyCarList.find(car => car.carId === rental.carId) || {};
-        
+        // 使用租賃數據中包含的車輛詳情
+        const carDetails = rental.carDetails || {};
+        console.log("租賃資料:", rental);
+
         // 根據 filter 條件過濾
         let shouldShow = false;
         const nowTimeStamp = Math.floor(Date.now() / 1000);
@@ -157,15 +158,15 @@ function renderRentalData(filter) {
                 shouldShow = rental.isActive; // 租賃進行中
                 break;
             case 'reserved':
-                shouldShow = !rental.isActive && (rental.endTimestamp > nowTimeStamp); // 已預約未開始
+                shouldShow = !rental.carDetails.status === 2; // 已預約未開始
                 break;
             case 'history':
-                shouldShow = !rental.isActive && (rental.endTimestamp < nowTimeStamp); // 已結束
+                shouldShow = !rental.carDetails.status === 4; // 已結束
                 break;
         }
         
         if(shouldShow) {
-            const rentalStatusInfo = getRentalStatusInfo(rental);
+            const rentalStatusInfo = getRentalStatusInfo(carDetails);
             const card = $(`
                 <div class="uploaded-card">
                     <img src="${carDetails.imageURL || 'images/scooter.jpg'}" alt="${carDetails.model || '車輛'}" class="vehicle-img" onerror="this.src='images/scooter.jpg'">
@@ -213,14 +214,15 @@ function getStatusInfo(status) {
 // 根據租賃狀態取得狀態資訊
 function getRentalStatusInfo(rental) {
     const nowTimeStamp = Math.floor(Date.now() / 1000);
-    if(rental.isActive) {
-        return {icon: '<i class="fa-solid fa-car-side"></i>', text: '租車中'};
-    } else if (rental.endTimestamp > nowTimeStamp) {
-        return {icon: '<i class="fa-solid fa-calendar-check"></i>', text: '已預約'};
-    } else if (rental.endTimestamp < nowTimeStamp) {
-        return {icon: '<i class="fa-solid fa-clock-rotate-left"></i>', text: '已結束租用'};
-    } else {
-        return {icon: '<i class="fa-solid fa-circle-question"></i>', text: '等待確認'};
+    switch(rental.status) {
+        case 2: // 已預約
+            return {icon: '<i class="fa-solid fa-calendar-check"></i>', text: '已預約'};
+        case 3: // 租車中
+            return { icon: '<i class="fa-solid fa-car-side"></i>', text: '租車中' };
+        case 4: // 已結束租用
+            return {icon: '<i class="fa-solid fa-clock-rotate-left"></i>', text: '已結束租用'};
+        default:
+            return { icon: '<i class="fa-solid fa-circle-question"></i>', text: '等待確認' };
     }
 }
 
@@ -252,7 +254,7 @@ function getRentalButtonByStatus(rental) {
             // 正常租賃中，顯示「確認還車」按鈕
             return `<div><button class="confirm-return-btn" data-carid="${rental.carId}">確認還車</button></div>`;
         }
-    } else if(rental.endTimestamp > nowTimeStamp) {
+    } else if(rental.carDetails.status === 2) {
         // 未過期的預約
         if(rental.renterConfirmed) {
             // 如果租戶已確認，顯示已確認按鈕（不可點擊）和取消預約按鈕
@@ -386,7 +388,7 @@ async function handleConfirmReturn(carId) {
     }
 }
 
-// 處理取消租車操作
+// 處理取消預約操作
 async function handleCancelRental(carId) {
     try {
         showLoading();
@@ -395,7 +397,7 @@ async function handleCancelRental(carId) {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-        
+        console.log("取消預約合約實例:", contract);
         // 調用合約取消租車方法
         const tx = await contract.cancelRental(carId);
         
@@ -403,7 +405,7 @@ async function handleCancelRental(carId) {
         $('#loading p').text('交易提交中，請稍等...');
         const receipt = await tx.wait();
         
-        console.log("取消租車交易收據:", receipt);
+        console.log("取消預約交易收據:", receipt);
         
         alert('已取消預約！');
         
@@ -411,12 +413,12 @@ async function handleCancelRental(carId) {
         await refreshData();
         
     } catch (error) {
-        console.error("取消租車失敗:", error);
+        console.error("取消預約失敗:", error);
         
         if (error.message && error.message.includes("user rejected")) {
             alert("您已取消操作！");
         } else {
-            alert("取消租車失敗: " + error.message);
+            alert("取消預約失敗: " + error.message);
         }
     } finally {
         hideLoading();
@@ -477,7 +479,7 @@ $(async function() {
         
         $(document).on('click', '.confirm-btn', function() {
             const carId = $(this).data('carid');
-            if (confirm('確認要繼續此租車交易嗎？')) {
+            if (confirm('確認取得機車，要開始租車嗎？')) {
                 handleConfirmRental(carId);
             }
         });

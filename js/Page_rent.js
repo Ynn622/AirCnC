@@ -268,18 +268,32 @@ $(document).ready(async function() {
                 
                 console.log("租賃信息:", {
                     carId: vehicleId,
-                    totalCost: rentCalc.total.toString(),
+                    totalCost: rentCalc.total,
                     startTimestamp: rentCalc.startTimestamp,
                     endTimestamp: rentCalc.endTimestamp
                 });
                 
                 // 調用合約的 rentCar 方法
+                // 估算 gas 並添加一個安全緩衝區
+                const gasEstimate = await contract.rentCar.estimateGas(
+                    vehicleId,
+                    rentCalc.total,
+                    rentCalc.startTimestamp,
+                    rentCalc.endTimestamp,
+                    { value: rentCalc.total }
+                );
+                
+                const gasLimit = Math.floor(Number(gasEstimate) * 1.2); // 增加 20% 作為緩衝
+                
                 const tx = await contract.rentCar(
                     vehicleId,
                     rentCalc.total,
-                    BigInt(rentCalc.startTimestamp),
-                    BigInt(rentCalc.endTimestamp),
-                    { value: rentCalc.total } // 支付租車費用
+                    rentCalc.startTimestamp,
+                    rentCalc.endTimestamp,
+                    { 
+                        value: rentCalc.total,
+                        gasLimit: gasLimit
+                    }
                 );
                 
                 // 等待交易確認
@@ -296,6 +310,17 @@ $(document).ready(async function() {
                 
                 if (error.message && error.message.includes("user rejected")) {
                     alert("您已取消交易！");
+                } else if (error.code === "INSUFFICIENT_FUNDS" || (error.message && error.message.includes("insufficient funds"))) {
+                    alert("您的錢包餘額不足！\n請確保您有足夠的以太幣支付租車費用和交易手續費。");
+                } else if (error.message && error.message.includes("execution reverted")) {
+                    // 智能合約執行失敗
+                    if (error.message.includes("Car is not available")) {
+                        alert("此車輛目前不可租用，可能已被他人預約。");
+                    } else if (error.message.includes("Owner cannot rent own car")) {
+                        alert("您不能租用自己的車輛！");
+                    } else {
+                        alert("合約執行錯誤: " + error.message);
+                    }
                 } else {
                     alert("預約租車失敗: " + error.message);
                 }

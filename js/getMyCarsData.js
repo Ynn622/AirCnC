@@ -53,9 +53,9 @@ async function getMyCarList() {
 }
 
 // 初始化獲取資料
-getMyCarList().then(cars => {
-    console.log(`已獲取${cars.length}輛上傳車輛資料`);
-});
+// getMyCarList().then(cars => {
+//     console.log(`已獲取${cars.length}輛上傳車輛資料`);
+// });
 
 // 導出資料供其他檔案使用
 export { MyCarList, getMyCarList }; 
