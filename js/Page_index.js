@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // 從 URL 獲取 - 是否為機車的參數
     const urlParams = new URLSearchParams(window.location.search);
     const isScooter = urlParams.get('isScooter') === 'false' ? false : true;
-    console.log(isScooter)
+    console.log("是否為機車：",isScooter)
     // 獲取&顯示 車輛信息
     generateRentalCards(isScooter);
 });

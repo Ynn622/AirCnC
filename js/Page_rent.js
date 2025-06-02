@@ -143,7 +143,7 @@ $(document).ready(async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const vehicleId = parseInt(urlParams.get('id'));
     
-    if (!vehicleId) {
+    if (vehicleId < 0) {
         alert('車輛ID無效！');
         window.location.href = 'index.html';
         return;
@@ -181,7 +181,7 @@ $(document).ready(async function() {
         const endDateTime = new Date(vehicle.endTimestamp * 1000);
         const currentDateTime = new Date();
 
-        currentDateTime.setMinutes(0, 0, 0);  // 將當前時間的分鐘、秒和毫秒設為0
+        currentDateTime.setMinutes(0, 0, 0);  // 
         currentDateTime.setHours(currentDateTime.getHours() + 9); // 調整為台灣時間
         // 如果當前時間早於可租用開始時間，則使用可租用開始時間
         startDateTime = startDateTime > currentDateTime ? startDateTime : currentDateTime

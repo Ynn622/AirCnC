@@ -1,5 +1,71 @@
-const CONTRACT_ADDRESS = "0x760eA502a700a859A81728A7654B51e0F81765EF";
+const CONTRACT_ADDRESS = "0x1Af37F23C27C0c4902122d1b918D63CF0cae2d1e";
 const ABI = [
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "_isscooter",
+                "type": "bool"
+            },
+            {
+                "internalType": "string",
+                "name": "_locate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_model",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_plate",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pricePerHour",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint32",
+                "name": "_fdcanstart",
+                "type": "uint32"
+            },
+            {
+                "internalType": "uint32",
+                "name": "_ldcanstart",
+                "type": "uint32"
+            },
+            {
+                "internalType": "string",
+                "name": "_imageURL",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_phone",
+                "type": "string"
+            }
+        ],
+        "name": "addCar",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_carId",
+                "type": "uint256"
+            }
+        ],
+        "name": "cancelRental",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
     {
         "anonymous": false,
         "inputs": [
@@ -54,15 +120,15 @@ const ABI = [
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "rentstart",
-                "type": "uint256"
+                "type": "uint64"
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "rentend",
-                "type": "uint256"
+                "type": "uint64"
             },
             {
                 "indexed": false,
@@ -88,6 +154,24 @@ const ABI = [
         "type": "event"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_carId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint64",
+                "name": "overtimeHours",
+                "type": "uint64"
+            }
+        ],
+        "name": "endRental",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
@@ -104,9 +188,9 @@ const ABI = [
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "extraHours",
-                "type": "uint256"
+                "type": "uint64"
             },
             {
                 "indexed": false,
@@ -184,52 +268,40 @@ const ABI = [
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "_isscooter",
-                "type": "bool"
-            },
-            {
-                "internalType": "string",
-                "name": "_locate",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "_model",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "_plate",
-                "type": "string"
-            },
-            {
                 "internalType": "uint256",
-                "name": "_pricePerHour",
+                "name": "_carId",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "_fdcanstart",
+                "name": "totalCost",
                 "type": "uint256"
             },
             {
-                "internalType": "uint256",
-                "name": "_ldcanstart",
-                "type": "uint256"
+                "internalType": "uint64",
+                "name": "rentstart",
+                "type": "uint64"
             },
             {
-                "internalType": "string",
-                "name": "_imageURL",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "_phone",
-                "type": "string"
+                "internalType": "uint64",
+                "name": "rentend",
+                "type": "uint64"
             }
         ],
-        "name": "addCar",
+        "name": "rentCar",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_carId",
+                "type": "uint256"
+            }
+        ],
+        "name": "setCarAvailability",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -242,7 +314,7 @@ const ABI = [
                 "type": "uint256"
             }
         ],
-        "name": "cancelRental",
+        "name": "startRental",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -293,19 +365,19 @@ const ABI = [
                 "type": "uint256"
             },
             {
-                "internalType": "uint256",
+                "internalType": "uint32",
                 "name": "fdcanstart",
-                "type": "uint256"
+                "type": "uint32"
             },
             {
-                "internalType": "uint256",
+                "internalType": "uint32",
                 "name": "ldcanstart",
-                "type": "uint256"
+                "type": "uint32"
             },
             {
-                "internalType": "uint256",
+                "internalType": "uint8",
                 "name": "status",
-                "type": "uint256"
+                "type": "uint8"
             },
             {
                 "internalType": "string",
@@ -319,24 +391,6 @@ const ABI = [
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_carId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "overtimeHours",
-                "type": "uint256"
-            }
-        ],
-        "name": "endRental",
-        "outputs": [],
-        "stateMutability": "payable",
         "type": "function"
     },
     {
@@ -400,19 +454,19 @@ const ABI = [
                         "type": "uint256"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint32",
                         "name": "fdcanstart",
-                        "type": "uint256"
+                        "type": "uint32"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint32",
                         "name": "ldcanstart",
-                        "type": "uint256"
+                        "type": "uint32"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint8",
                         "name": "status",
-                        "type": "uint256"
+                        "type": "uint8"
                     },
                     {
                         "internalType": "string",
@@ -475,19 +529,19 @@ const ABI = [
                         "type": "uint256"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint32",
                         "name": "fdcanstart",
-                        "type": "uint256"
+                        "type": "uint32"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint32",
                         "name": "ldcanstart",
-                        "type": "uint256"
+                        "type": "uint32"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint8",
                         "name": "status",
-                        "type": "uint256"
+                        "type": "uint8"
                     },
                     {
                         "internalType": "string",
@@ -525,14 +579,14 @@ const ABI = [
                         "type": "address"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint64",
                         "name": "startTimestamp",
-                        "type": "uint256"
+                        "type": "uint64"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint64",
                         "name": "endTimestamp",
-                        "type": "uint256"
+                        "type": "uint64"
                     },
                     {
                         "internalType": "uint256",
@@ -571,116 +625,17 @@ const ABI = [
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "_owner",
+                "type": "address"
+            }
+        ],
+        "name": "getOwnerBalance",
+        "outputs": [
+            {
                 "internalType": "uint256",
-                "name": "_carId",
+                "name": "",
                 "type": "uint256"
-            }
-        ],
-        "name": "getRentalById",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "carId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address payable",
-                        "name": "renter",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "startTimestamp",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "endTimestamp",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ftotalCost",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "isActive",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "renterConfirmed",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "ownerConfirmed",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "extraFeePaid",
-                        "type": "bool"
-                    }
-                ],
-                "internalType": "struct DecentralizedCarRental.RentalInfo",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getstatus2",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getstatus3",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getstatus4",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getstatus5",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
             }
         ],
         "stateMutability": "view",
@@ -689,6 +644,25 @@ const ABI = [
     {
         "inputs": [],
         "name": "nextCarId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "ownerBalances",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -727,93 +701,6 @@ const ABI = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_carId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalCost",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rentstart",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "rentend",
-                "type": "uint256"
-            }
-        ],
-        "name": "rentCar",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "rentalDetails",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "carId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address payable",
-                "name": "renter",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "startTimestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "endTimestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "ftotalCost",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "isActive",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "renterConfirmed",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "ownerConfirmed",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "extraFeePaid",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
             }
@@ -831,14 +718,14 @@ const ABI = [
                 "type": "address"
             },
             {
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "startTimestamp",
-                "type": "uint256"
+                "type": "uint64"
             },
             {
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "endTimestamp",
-                "type": "uint256"
+                "type": "uint64"
             },
             {
                 "internalType": "uint256",
@@ -891,32 +778,6 @@ const ABI = [
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_carId",
-                "type": "uint256"
-            }
-        ],
-        "name": "setCarAvailability",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_carId",
-                "type": "uint256"
-            }
-        ],
-        "name": "startRental",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     }
 ]

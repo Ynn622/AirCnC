@@ -255,7 +255,7 @@ function getRentalButtonByStatus(rental) {
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
-            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp ? rental.endTimestamp : rental.rentalDetails.endTimestamp}">確認還車</button></div>`;
         }
     } else if(rental.carDetails.status === 2) {
         // 未過期的預約
@@ -357,7 +357,7 @@ async function handleConfirmRental(carId) {
 }
 
 // 處理確認還車操作
-async function handleConfirmReturn(carId) {
+async function handleConfirmReturn(carId, endTime) {
     try {
         showLoading();
         
@@ -366,8 +366,26 @@ async function handleConfirmReturn(carId) {
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
         
+        // 檢查結束時間是否已過
+        let nowTimeStamp = Math.floor(Date.now() / 1000);
+        let overTimeHour = 0; // 超時小時數
+        if (endTime < nowTimeStamp) {
+            overTimeHour = Math.ceil((nowTimeStamp - endTime) / 3600); // 計算超時小時數
+            // 如果結束時間已過，提示用戶
+            if (confirm("車輛已超時，是否確認還車？\n超時小時數：" + overTimeHour)) {
+                // 如果用戶確認，則繼續還車流程
+                console.log("用戶確認還車，超時小時數:", overTimeHour);
+            } else {
+                // 如果用戶取消，則不進行還車操作
+                alert("已取消還車操作！");
+                return;
+            }
+        }
+
+        console.log("開始確認還車，車輛ID:", carId, "結束時間:", endTime, "超時小時數:", overTimeHour);
+
         // 調用合約確認還車方法
-        const tx = await contract.endRental(carId);
+        const tx = await contract.endRental(carId, overTimeHour);
         
         // 等待交易確認
         $('#loading p').text('交易提交中，請稍等...');
@@ -491,8 +509,9 @@ $(async function() {
         
         $(document).on('click', '.confirm-return-btn', function() {
             const carId = $(this).data('carid');
+            const endTime = $(this).data('endtime');
             if (confirm('確認車輛已歸還？')) {
-                handleConfirmReturn(carId);
+                handleConfirmReturn(carId, endTime);
             }
         });
         
