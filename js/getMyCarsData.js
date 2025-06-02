@@ -20,14 +20,25 @@ async function fetchMyCars() {
         
         // 獲取使用者上傳的車輛
         const cars = await contract.getMyCars();
-        const carIds = cars.map(car => Number(car.carId));
         let rentals = [];
-        for (let i = 0; i < carIds.length; i++) {
+        
+        // 遍歷每輛車，直接使用 car 物件
+        for (let i = 0; i < cars.length; i++) {
             let rental = {};
-            if (cars[carIds[i]].status!=1 && cars[carIds[i]].status!=5) {
-                rental = await contract.rentals(carIds[i]);
+            const carId = Number(cars[i].carId);
+            
+            // 檢查車輛狀態是否需要獲取租賃資料
+            if (cars[i].status != 1 && cars[i].status != 5) {
+                rental = await contract.rentals(carId);
+                console.log(`獲取車輛 ${carId} 的租賃資料:`, rental);
             }
-            rentals.push(rental ? {
+            
+            // 將租賃資料添加到陣列，使用 carId 作為索引
+            while (rentals.length <= carId) {
+                rentals.push({});
+            }
+            
+            rentals[carId] = rental ? {
                 carId: Number(rental.carId),
                 renter: rental.renter,
                 startTimestamp: Number(rental.startTimestamp),
@@ -37,25 +48,28 @@ async function fetchMyCars() {
                 renterConfirmed: rental.renterConfirmed,
                 ownerConfirmed: rental.ownerConfirmed,
                 extraFeePaid: rental.extraFeePaid,
-            }:{});
+            } : {};
         }
 
         // 格式化車輛資料
-        return cars.map(car => ({
-            rentalDetails: rentals[Number(car.carId)] || {},
-            carId: Number(car.carId),
-            isscooter: car.isscooter,
-            owner: car.owner,
-            locate: car.locate,
-            model: car.model,
-            plate: car.plate,
-            pricePerHour: Number(car.pricePerHour),
-            fdcanstart: Number(car.fdcanstart),
-            ldcanstart: Number(car.ldcanstart),
-            status: Number(car.status),
-            imageURL: car.imageURL || 'images/NoImage.png',
-            phone: car.phone
-        }));
+        return cars.map(car => {
+            const carId = Number(car.carId);
+            return {
+                rentalDetails: rentals[carId] || {},
+                carId: carId,
+                isscooter: car.isscooter,
+                owner: car.owner,
+                locate: car.locate,
+                model: car.model,
+                plate: car.plate,
+                pricePerHour: Number(car.pricePerHour),
+                fdcanstart: Number(car.fdcanstart),
+                ldcanstart: Number(car.ldcanstart),
+                status: Number(car.status),
+                imageURL: car.imageURL || 'images/NoImage.png',
+                phone: car.phone
+            };
+        });
     } catch (error) {
         console.error("獲取上傳車輛資料失敗:", error);
         return [];

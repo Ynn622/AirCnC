@@ -237,7 +237,7 @@ function getButtonByStatus(car) {
         case 2: // 已被預約
             return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
-            return `<div><button class="confirm-return-btn" data-carid="${car.carId} data-endTime="${car.endTimestamp}"">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${car.carId}" data-endTime="${car.endTimestamp}">確認還車</button></div>`;
         case 4: // 已結束租車
             return '';
         default:
