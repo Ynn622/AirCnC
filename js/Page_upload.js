@@ -272,11 +272,14 @@ async function getContractInstance() {
 $('.upload-form').on("submit", async function(e){
     e.preventDefault();
     
+    const requiredFields = ['#address-text', '#model-text', '#plate-text', '#fee-text', '#phone-text'];
+    const emptyField = requiredFields.find(selector => $(selector).val().trim() === "");
+    
     // 基本表單驗證
     if (!selectedFile){
         alert("請上傳照片！");
         return;
-    } else if ($('#address-text').val() == "" || $('#model-text').val() == "" || $('#plate-text').val() == "" || $('#fee-text').val() == "" || $('#phone-text').val()==""){
+    } else if (emptyField){
         alert("請填寫所有資料！");
         return;
     } else if ($('#dateRangePicker').val() == "") {
@@ -362,10 +365,10 @@ $('.upload-form').on("submit", async function(e){
             console.error("交易執行錯誤:", error);
             $('#txStatusModal').css('display', 'none');
             
-            if (error.reason) {
-                alert(`交易失敗：${error.reason}`);
-            } else if (error.message.includes("user rejected")) {
+            if (error.message.includes("rejected")) {
                 alert("您已取消交易！");
+            } else if (error.reason) {
+                alert(`交易失敗：${error.reason}`);
             } else {
                 alert("交易失敗，請稍後再試！");
             }
@@ -379,7 +382,7 @@ $('.upload-form').on("submit", async function(e){
         // 隱藏交易狀態模態框
         $('#txStatusModal').css('display', 'none');
         
-        if (error.message && error.message.includes("user rejected")) {
+        if (error.message && error.message.includes("rejected")) {
             alert("您已取消交易！");
         } else if (error.message && error.message.includes("Cloudinary")) {
             alert("圖片上傳失敗，請檢查您的網絡連接並重試！");

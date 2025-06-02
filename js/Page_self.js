@@ -121,7 +121,8 @@ function renderOwnerData(filter) {
                         <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(car.locate)}', '_blank')"></i></div>
                         <div><b>車牌</b>：${car.plate}</div>
                         <div><b>計費方式</b>：$${car.pricePerHour} wei/h</div>
-                        ${(car.status===2 || car.status===3) ? `<div><b>被預約日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>` : 
+                        ${(car.status >= 2 && car.status <= 4) ? `<div><b>預約人</b>：${car.rentalDetails.renter ? car.rentalDetails.renter.slice(0, 8) + '...' : '未知'}</div>
+                                                                <div><b>被預約日期</b>：${timeToStr(car.rentalDetails.startTimestamp)} ~ ${timeToStr(car.rentalDetails.endTimestamp)}</div>` : 
                                         `<div><b>提供日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>`}
                         ${getButtonByStatus(car)}
                     </div>
@@ -156,7 +157,7 @@ function renderRentalData(filter) {
                 shouldShow = true;
                 break;
             case 'renting':
-                shouldShow = rental.isActive; // 租賃進行中
+                shouldShow = rental.carDetails.status === 3; // 租賃進行中
                 break;
             case 'reserved':
                 shouldShow = rental.carDetails.status === 2; // 已預約未開始
@@ -236,7 +237,7 @@ function getButtonByStatus(car) {
         case 2: // 已被預約
             return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
-            return `<div><button class="confirm-return-btn" data-carid="${car.carId}">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${car.carId} data-endTime="${car.endTimestamp}"">確認還車</button></div>`;
         case 4: // 已結束租車
             return '';
         default:
@@ -248,13 +249,13 @@ function getButtonByStatus(car) {
 function getRentalButtonByStatus(rental) {
     const nowTimeStamp = Math.floor(Date.now() / 1000);
     
-    if(rental.isActive) {
+    if (rental.carDetails.status === 3) {
         if(!rental.renterConfirmed) {
             // 如果租賃活躍但租戶確認為假，顯示「已確認還車」按鈕
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
-            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}">確認還車</button></div>`;
         }
     } else if(rental.carDetails.status === 2) {
         // 未過期的預約
@@ -366,7 +367,7 @@ async function handleConfirmReturn(carId) {
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
         
         // 調用合約確認還車方法
-        const tx = await contract.confirmReturn(carId);
+        const tx = await contract.endRental(carId);
         
         // 等待交易確認
         $('#loading p').text('交易提交中，請稍等...');

@@ -20,9 +20,29 @@ async function fetchMyCars() {
         
         // 獲取使用者上傳的車輛
         const cars = await contract.getMyCars();
+        const carIds = cars.map(car => Number(car.carId));
+        let rentals = [];
+        for (let i = 0; i < carIds.length; i++) {
+            let rental = {};
+            if (cars[carIds[i]].status!=1 && cars[carIds[i]].status!=5) {
+                rental = await contract.rentals(carIds[i]);
+            }
+            rentals.push(rental ? {
+                carId: Number(rental.carId),
+                renter: rental.renter,
+                startTimestamp: Number(rental.startTimestamp),
+                endTimestamp: Number(rental.endTimestamp),
+                ftotalCost: Number(rental.ftotalCost),
+                isActive: rental.isActive,
+                renterConfirmed: rental.renterConfirmed,
+                ownerConfirmed: rental.ownerConfirmed,
+                extraFeePaid: rental.extraFeePaid,
+            }:{});
+        }
 
         // 格式化車輛資料
         return cars.map(car => ({
+            rentalDetails: rentals[Number(car.carId)] || {},
             carId: Number(car.carId),
             isscooter: car.isscooter,
             owner: car.owner,
