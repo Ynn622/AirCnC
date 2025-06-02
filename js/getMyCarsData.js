@@ -30,7 +30,7 @@ async function fetchMyCars() {
             // 檢查車輛狀態是否需要獲取租賃資料
             if (cars[i].status != 1 && cars[i].status != 5) {
                 rental = await contract.rentals(carId);
-                console.log(`獲取車輛 ${carId} 的租賃資料:`, rental);
+                //console.log(`獲取車輛 ${carId} 的租賃資料:`, rental);
             }
             
             // 將租賃資料添加到陣列，使用 carId 作為索引

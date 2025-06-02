@@ -237,7 +237,11 @@ function getButtonByStatus(car) {
         case 2: // 已被預約
             return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
-            return `<div><button class="confirm-return-btn" data-carid="${car.carId}" data-endTime="${car.endTimestamp}">確認還車</button></div>`;
+            if (car.rentalDetails.renterConfirmed) {
+                // 如果租戶未確認，顯示「租客未還車」按鈕
+                return `<div><button class="confirm-return-btn" disabled>租客未還車</button></div>`;
+            }
+            return `<div><button class="confirm-return-btn" data-carid="${car.carId}" data-endTime="${car.rentalDetails.endTimestamp}">確認還車</button></div>`;
         case 4: // 已結束租車
             return '';
         default:
@@ -255,7 +259,7 @@ function getRentalButtonByStatus(rental) {
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
-            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp ? rental.endTimestamp : rental.rentalDetails.endTimestamp}">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}">確認還車</button></div>`;
         }
     } else if(rental.carDetails.status === 2) {
         // 未過期的預約
