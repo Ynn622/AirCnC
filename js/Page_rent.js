@@ -49,7 +49,7 @@ function calcDurationAndPrice(pricePerHour) {
     
     // 計算金額
     let total = BigInt(hours) * BigInt(pricePerHour);
-    document.getElementById('totalPrice').textContent = `$ ${total} wei`;
+    document.getElementById('totalPrice').textContent = `$ ${formatBigIntWithCommas(total)} wei`;
     
     return { 
         hours: hours, 
@@ -164,12 +164,12 @@ $(document).ready(async function() {
         // 更新詳細資訊表格
         $('#owner-text').text(`${vehicle.owner.slice(0,8)}...`);
         $('#plate-text').text(`${vehicle.plate}`);
-        $('#price-text').text(`${vehicle.pricePerHour} wei/h`);
+        $('#price-text').text(`${formatBigIntWithCommas(vehicle.pricePerHour)} wei/h`);
 
         // 更新可用日期
         const startDate = timeToStr(vehicle.startTimestamp);
         const endDate = timeToStr(vehicle.endTimestamp);
-        $('.rent-detail-date span').eq(1).text(`${startDate} - ${endDate}`);
+        $('.rent-detail-date span').eq(1).text(`${startDate} ~ ${endDate}`);
 
         if (vehicle.status !== 1) {
             alert("此車輛目前不可租用，可能已被他人預約。");

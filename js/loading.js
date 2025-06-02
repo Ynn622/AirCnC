@@ -6,3 +6,8 @@ function showLoading() {
 function hideLoading() {
     document.getElementById('loading').style.display = 'none';
 }
+
+// BigInt 格式化為帶逗號的字串
+function formatBigIntWithCommas(bigIntValue) {
+    return bigIntValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

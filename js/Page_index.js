@@ -115,7 +115,7 @@ async function generateRentalCards(isscooter) {
                     <div style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vehicle.location)}', '_blank')"><span><b>地點</b>：</span>${vehicle.location}</div>
                     <div><span><b>聯絡電話</b>：</span>${vehicle.phone}</div>
                     <div><span><b>車牌</b>：</span>${vehicle.plate} </div>
-                    <div><span><b>計費方式</b>：</span>${vehicle.pricePerHour} wei/h</div>
+                    <div><span><b>計費方式</b>：</span>${formatBigIntWithCommas(vehicle.pricePerHour)} wei/h</div>
                     <div><span><b>可租借日期</b>：</span>${timeToStr(vehicle.startTimestamp)} ~ ${timeToStr(vehicle.endTimestamp)}</div>
                     <button class="rent-btn" onclick="window.location.href='rent.html?id=${vehicle.id}'" ${vehicle.isActive ? 'disabled' : ''}>
                         ${vehicle.isActive ? '已出租' : '預約租車'}

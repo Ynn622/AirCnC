@@ -26,6 +26,7 @@ function timeToStr(timestamp) {
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
+
 // 標籤切換功能
 function setupTabsAndFilters() {
     // 標籤切換
@@ -120,7 +121,7 @@ function renderOwnerData(filter) {
                         <div class="status-info"> ${statusInfo.icon} &nbsp;${statusInfo.text}</div>
                         <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(car.locate)}', '_blank')"></i></div>
                         <div><b>車牌</b>：${car.plate}</div>
-                        <div><b>計費方式</b>：$${car.pricePerHour} wei/h</div>
+                        <div><b>計費方式</b>：$${formatBigIntWithCommas(car.pricePerHour)} wei/h</div>
                         ${(car.status >= 2 && car.status <= 4) ? `<div><b>預約人</b>：${car.rentalDetails.renter ? car.rentalDetails.renter.slice(0, 8) + '...' : '未知'}</div>
                                                                 <div><b>被預約日期</b>：${timeToStr(car.rentalDetails.startTimestamp)} ~ ${timeToStr(car.rentalDetails.endTimestamp)}</div>` : 
                                         `<div><b>提供日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>`}
@@ -179,9 +180,9 @@ function renderRentalData(filter) {
                         <div><b>地址</b>：${carDetails.locate || '未知'} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(carDetails.locate || '')}', '_blank')"></i></div>
                         <div><b>聯絡電話</b>：${carDetails.phone || '未知'}</div>
                         <div><b>車牌</b>：${carDetails.plate || '未知'}</div>
-                        <div><b>計費方式</b>：$${carDetails.pricePerHour || 0} wei/h</div>
+                        <div><b>計費方式</b>：$${formatBigIntWithCommas(carDetails.pricePerHour)} wei/h</div>
                         <div><b>預約日期</b>：${timeToStr(rental.startTimestamp)} ~ ${timeToStr(rental.endTimestamp)}</div>
-                        <div><b>總費用</b>：$${rental.ftotalCost} wei</div>
+                        <div><b>總費用</b>：$${formatBigIntWithCommas(rental.ftotalCost)} wei</div>
                         ${getRentalButtonByStatus(rental)}
                     </div>
                 </div>
@@ -259,7 +260,7 @@ function getRentalButtonByStatus(rental) {
             return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
-            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}">確認還車</button></div>`;
+            return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}" data-feePerHour="${rental.carDetails.pricePerHour}">確認還車</button></div>`;
         }
     } else if(rental.carDetails.status === 2) {
         // 未過期的預約
@@ -361,10 +362,10 @@ async function handleConfirmRental(carId) {
 }
 
 // 處理確認還車操作
-async function handleConfirmReturn(carId, endTime) {
+async function handleConfirmReturn(carId, endTime, feePerHour) {
     try {
         showLoading();
-        
+        console.log("開始確認還車，車輛ID:", carId, "結束時間:", endTime, "每小時費用:", feePerHour);
         // 創建合約實例
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
@@ -373,12 +374,16 @@ async function handleConfirmReturn(carId, endTime) {
         // 檢查結束時間是否已過
         let nowTimeStamp = Math.floor(Date.now() / 1000);
         let overTimeHour = 0; // 超時小時數
-        if (endTime < nowTimeStamp) {
+        let overFee = 0; // 超時費用
+
+        // 如果結束時間已過，計算超時費用)
+        if (!!feePerHour && endTime < nowTimeStamp) {
             overTimeHour = Math.ceil((nowTimeStamp - endTime) / 3600); // 計算超時小時數
+            overFee = overTimeHour * feePerHour; // 計算超時費用
             // 如果結束時間已過，提示用戶
-            if (confirm("車輛已超時，是否確認還車？\n超時小時數：" + overTimeHour)) {
+            if (confirm(`車輛已超時，是否確認還車？\n超時小時數：${overTimeHour}\n超時費用： ${formatBigIntWithCommas(overFee)} wei`)) {
                 // 如果用戶確認，則繼續還車流程
-                console.log("用戶確認還車，超時小時數:", overTimeHour);
+                console.log("用戶確認還車，超時小時數:", overTimeHour, "超時費用:", overFee);
             } else {
                 // 如果用戶取消，則不進行還車操作
                 alert("已取消還車操作！");
@@ -386,10 +391,10 @@ async function handleConfirmReturn(carId, endTime) {
             }
         }
 
-        console.log("開始確認還車，車輛ID:", carId, "結束時間:", endTime, "超時小時數:", overTimeHour);
+        console.log("開始確認還車，車輛ID:", carId, "超時小時數:", overTimeHour, "超時費用:", overFee);
 
         // 調用合約確認還車方法
-        const tx = await contract.endRental(carId, overTimeHour);
+        const tx = await contract.endRental(carId, overTimeHour,{value: overFee});
         
         // 等待交易確認
         $('#loading p').text('交易提交中，請稍等...');
@@ -514,8 +519,9 @@ $(async function() {
         $(document).on('click', '.confirm-return-btn', function() {
             const carId = $(this).data('carid');
             const endTime = $(this).data('endtime');
+            const feePerHour = $(this).data('feeperhour');
             if (confirm('確認車輛已歸還？')) {
-                handleConfirmReturn(carId, endTime);
+                handleConfirmReturn(carId, endTime, feePerHour);
             }
         });
         

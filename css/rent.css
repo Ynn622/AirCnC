@@ -50,6 +50,10 @@ body {
     font-weight: bold;
     font-size: 1em;
 }
+.rent-detail-table div {
+    margin-bottom: 12px;
+    display: block;
+}
 .rent-detail-date {
     font-size: 1.1em;
     margin-bottom: 10px;
@@ -117,7 +121,7 @@ body {
     background: #6b8fa3;
     color: #fff;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1050px) {
     .rent-detail-container {
         flex-direction: column;
         gap: 30px;
@@ -196,5 +200,15 @@ input[type="datetime-local"].success {
     
     .rent-form-row label {
         font-size: 14px;
+    }
+
+    .rent-detail-table div {
+        margin-bottom: 12px;
+        display: flex;
+    }
+    .rent-detail-table span {
+        flex: 0 0 100px; /* 固定寬度 */
+        font-weight: bold;
+        font-size: 1em;
     }
 } 
