@@ -52,6 +52,96 @@ function initMap() {
         source: new ol.source.Vector()
     });
     map.addLayer(markerLayer);
+    
+    // 新增定位功能
+    const locateMeButton = document.getElementById('locateMe');
+    locateMeButton.addEventListener('click', function() {
+        if (navigator.geolocation) {
+            // 顯示定位中的提示訊息
+            locateMeButton.disabled = true;
+            locateMeButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lon = position.coords.longitude;
+                    const lat = position.coords.latitude;
+                    const coordinate = ol.proj.fromLonLat([lon, lat]);
+                    
+                    // 更新地圖視圖
+                    map.getView().animate({
+                        center: coordinate,
+                        zoom: 17,
+                        duration: 1000
+                    });
+                    
+                    // 清除舊標記
+                    markerLayer.getSource().clear();
+                    
+                    // 添加新標記
+                    const feature = new ol.Feature({
+                        geometry: new ol.geom.Point(coordinate)
+                    });
+                    markerLayer.getSource().addFeature(feature);
+                    
+                    // 反向地理編碼
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`)
+                        .then(response => response.json())
+                        .then(data => {
+                            selectedLocation = {
+                                address: formatAddress(data.display_name),
+                                lat: lat,
+                                lng: lon
+                            };
+                            
+                            // 恢復按鈕狀態
+                            locateMeButton.disabled = false;
+                            locateMeButton.innerHTML = '<i class="fa-solid fa-crosshairs"></i>';
+                        })
+                        .catch(error => {
+                            console.error('反向地理編碼出錯:', error);
+                            
+                            // 即使無法獲取地址，仍設置座標
+                            selectedLocation = {
+                                address: `經度: ${lon.toFixed(6)}, 緯度: ${lat.toFixed(6)}`,
+                                lat: lat,
+                                lng: lon
+                            };
+                            
+                            // 恢復按鈕狀態
+                            locateMeButton.disabled = false;
+                            locateMeButton.innerHTML = '<i class="fa-solid fa-crosshairs"></i>';
+                        });
+                },
+                function(error) {
+                    // 處理錯誤
+                    let errorMessage = '無法取得您的位置';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = '您拒絕了定位請求，請在瀏覽器設定中允許定位功能';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = '位置資訊無法獲取';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = '獲取位置請求超時';
+                            break;
+                    }
+                    alert(errorMessage);
+                    
+                    // 恢復按鈕狀態
+                    locateMeButton.disabled = false;
+                    locateMeButton.innerHTML = '<i class="fa-solid fa-crosshairs"></i>';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            alert('您的瀏覽器不支援定位功能');
+        }
+    });
 
     // 點擊地圖時更新標記
     map.on('click', function(evt) {

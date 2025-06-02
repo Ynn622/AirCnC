@@ -108,10 +108,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="map" style="height: 400px;"></div>
-                    <div class="mt-3">
-                        <input type="text" id="searchBox" class="form-control" placeholder="搜尋地址">
-                    </div>
+                    <div id="map" style="height: 400px;"></div>                <div class="mt-3 d-flex">
+                    <input type="text" id="searchBox" class="form-control me-2" placeholder="搜尋地址">
+                    <button id="locateMe" class="btn btn-info" title="定位我的位置">
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </button>
+                </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
