@@ -81,22 +81,65 @@ async function fetchAvailableCars(isscooter) {
     }
 }
 
+// 過濾車輛資料
+function filterVehicles(vehicles, filters) {
+    return vehicles.filter(vehicle => {
+        // 依據車型過濾
+        if (filters.model && !vehicle.model.toLowerCase().includes(filters.model.toLowerCase())) {
+            return false;
+        }
+        
+        // 依據價格區間過濾
+        const price = parseInt(vehicle.pricePerHour);
+        if (filters.minPrice && price < parseInt(filters.minPrice)) {
+            return false;
+        }
+        if (filters.maxPrice && price > parseInt(filters.maxPrice)) {
+            return false;
+        }
+        
+        // 依據日期範圍過濾
+        if (filters.startDate && filters.endDate) {
+            const startDateTimestamp = Math.floor(new Date(filters.startDate).getTime() / 1000);
+            const endDateTimestamp = Math.floor(new Date(filters.endDate).getTime() / 1000);
+            
+            // 檢查篩選的日期範圍是否完全被包含在車輛可租借日期範圍內
+            // 條件：租借開始日期需大於等於車輛可租借開始日期，且租借結束日期需小於等於車輛可租借結束日期
+            if (startDateTimestamp < vehicle.startTimestamp || endDateTimestamp > vehicle.endTimestamp) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 // 動態生成租車卡片
-async function generateRentalCards(isscooter) {
+async function generateRentalCards(isscooter, filters = {}) {
     try {
         const rentalListContainer = document.getElementById('rentalList');
+        // 顯示加載中動畫
+        showLoading();
+        
         // 獲取車輛數據
         const vehicles = await fetchAvailableCars(isscooter); // false 代表汽車，true 代表機車
         
         // 檢查是否有錯誤
         if (vehicles === "Error") {
             rentalListContainer.innerHTML = '<div class="error-message">載入時發生錯誤<br>請先安裝MetaMask!</div>';
+            hideLoading();
             return;
         }
 
+        // 如果有過濾條件，應用過濾
+        const filteredVehicles = filters && Object.keys(filters).length > 0 
+            ? filterVehicles(vehicles, filters) 
+            : vehicles;
+
         // 檢查是否有可用車輛
-        if (!vehicles || vehicles.length === 0) {
-            rentalListContainer.innerHTML = '<div class="no-cars-message">目前沒有可用的車輛</div>';
+        if (!filteredVehicles || filteredVehicles.length === 0) {
+            rentalListContainer.innerHTML = '<div class="no-cars-message">無符合條件的車輛</div>';
+            hideLoading();
             return;
         }
 
@@ -104,7 +147,7 @@ async function generateRentalCards(isscooter) {
         rentalListContainer.innerHTML = '';
         
         // 為每個車輛創建卡片
-        vehicles.forEach(vehicle => {
+        filteredVehicles.forEach(vehicle => {
             const card = document.createElement('div');
             card.className = 'rent-card col-md-6';
             card.innerHTML = `
@@ -124,10 +167,85 @@ async function generateRentalCards(isscooter) {
             `;
             rentalListContainer.appendChild(card);
         });
+        
+        hideLoading();
     } catch (error) {
         console.error("生成租車卡片時發生錯誤:", error);
         document.getElementById('rentalList').innerHTML = '<div class="error-message">載入車輛資料時發生錯誤</div>';
+        hideLoading();
     }
+}
+
+// 處理搜尋功能
+function setupSearchFunctionality(isScooter) {
+    // 初始化搜尋相關元素
+    const searchModelInput = document.getElementById('searchModel');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const dateRangePickerInput = document.getElementById('dateRangePicker');
+    const resetButton = document.getElementById('resetBtn');
+    
+    // 初始化 Flatpickr 日期範圍選擇器
+    let dateRangePicker = flatpickr("#dateRangePicker", {
+        mode: "range",
+        showMonths: 2, // 顯示兩個月份
+        locale: "zh", // 繁體中文
+        dateFormat: "Y-m-d",
+        position: "auto", // 自動調整彈出位置
+        onChange: function(selectedDates) {
+            // 日期選擇變更後立即執行搜尋
+            if (selectedDates.length === 2) {
+                performSearch();
+            }
+        }
+    });
+    
+    // 執行搜尋的函數
+    function performSearch() {
+        const filters = {
+            model: searchModelInput.value.trim(),
+            minPrice: minPriceInput.value.trim() ? minPriceInput.value.trim() : null,
+            maxPrice: maxPriceInput.value.trim() ? maxPriceInput.value.trim() : null
+        };
+        
+        // 獲取選擇的日期範圍
+        const selectedDates = dateRangePicker.selectedDates;
+        if (selectedDates && selectedDates.length === 2) {
+            filters.startDate = selectedDates[0];
+            filters.endDate = selectedDates[1];
+        }
+        
+        // 移除空值
+        Object.keys(filters).forEach(key => {
+            if (!filters[key]) delete filters[key];
+        });
+        
+        // 執行過濾搜尋
+        generateRentalCards(isScooter, filters);
+    }
+    
+    // 重置按鈕事件
+    resetButton.addEventListener('click', function() {
+        searchModelInput.value = '';
+        minPriceInput.value = '';
+        maxPriceInput.value = '';
+        dateRangePicker.clear(); // 清空日期選擇器
+        generateRentalCards(isScooter);
+    });
+    
+    // 搜尋車型欄位失焦時進行搜尋
+    searchModelInput.addEventListener('blur', performSearch);
+    
+    // 輸入欄位按 Enter 鍵也進行搜尋
+    searchModelInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.target.blur(); // 失焦以觸發 blur 事件進行搜尋
+        }
+    });
+    
+    // 其他輸入欄位改變時也進行搜尋
+    minPriceInput.addEventListener('change', performSearch);
+    maxPriceInput.addEventListener('change', performSearch);
 }
 
 // 頁面載入時生成卡片
@@ -136,10 +254,15 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('user-icon-btn').addEventListener('click', function() {
         connect();
     });
+    
     // 從 URL 獲取 - 是否為機車的參數
     const urlParams = new URLSearchParams(window.location.search);
     const isScooter = urlParams.get('isScooter') === 'false' ? false : true;
-    console.log("是否為機車：",isScooter)
+    console.log("是否為機車：", isScooter);
+    
+    // 設置搜尋功能
+    setupSearchFunctionality(isScooter);
+    
     // 獲取&顯示 車輛信息
     generateRentalCards(isScooter);
 });

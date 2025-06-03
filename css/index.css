@@ -1,25 +1,138 @@
-.search-bar {
+.search-section {
+    margin-bottom: 30px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.search-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-item label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9em;
+}
+
+.search-item input {
+    padding: 10px 15px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    font-size: 1em;
+}
+
+.price-range {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    gap: 8px;
 }
 
-.search-bar input {
-    width: 350px;
-    padding: 12px 18px;
-    font-size: 1.3em;
+.price-range input {
+    width: calc(50% - 10px);
+    padding: 10px 15px;
     border: 1.5px solid #ccc;
-    border-radius: 10px 0 0 10px;
+    border-radius: 8px;
     outline: none;
-    background: #f5f6fa;
+    background: #fff;
 }
 
-.search-bar button {
-    padding: 12px 18px;
-    font-size: 1.3em;
+.price-range span {
+    font-weight: bold;
+}
+
+#resetBtn {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
     border: 1.5px solid #ccc;
-    border-left: none;
-    border-radius: 0 10px 10px 0;
-    background: #f5f6fa;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    height: fit-content;
+    align-self: flex-end;
+    margin-top: 25px;
+}
+
+#resetBtn:hover {
+    background-color: #e0e0e0;
+}
+
+#resetBtn {
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+#resetBtn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Flatpickr 日期選擇器樣式 */
+.flatpickr-input {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* 調整日期區間選擇器樣式 */
+#dateRangePicker {
+    padding: 10px 15px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    font-size: 1em;
+    width: 100%;
+}
+
+/* Flatpickr 高亮當前選擇範圍的背景色 */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+/* Flatpickr 範圍內的日期背景色 */
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
+.flatpickr-day.nextMonthDay.today.inRange {
+    background: #e6f2ff;
+    border-color: #e6f2ff;
 }
