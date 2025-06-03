@@ -325,12 +325,14 @@ $(document).ready(async function() {
                     alert("您的錢包餘額不足！\n請確保您有足夠的以太幣支付租車費用和交易手續費。");
                 } else if (error.message && error.message.includes("execution reverted")) {
                     // 智能合約執行失敗
-                    if (error.message.includes("Car is not available")) {
+                    if (error.reason === "Car is not available") {
                         alert("此車輛目前不可租用，可能已被他人預約。");
-                    } else if (error.message.includes("Owner cannot rent own car")) {
+                    } else if (error.reason === "Owner cannot rent own car") {
                         alert("您不能租用自己的車輛！");
-                    } else {
-                        alert("合約執行錯誤: " + error.message);
+                    } else if (error.reason === "Must rent for at least 1 hour") {
+                        alert("租車時間無效，請選擇至少1小時的租期！");
+                    } else if (error.reason === "Insufficient ETH sent") {
+                        alert("您發送的以太幣不足以支付租車費用！\n請確保您有足夠的以太幣。");
                     }
                 } else {
                     alert("預約租車失敗: " + error.message);

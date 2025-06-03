@@ -311,12 +311,20 @@ async function handleRemoveCar(carId) {
         
     } catch (error) {
         console.error("下架車輛失敗:", error);
-        
+
+        const errorMessages = {
+            "Can't change your car status": "無法下架，車輛狀態不允許下架！\n請確認車輛是否已被預約或正在出租中！",
+            "Not the car owner": "無法下架，您不是車主！\n請確認是否已登入正確的帳戶！",
+        };
+
         if (error.message && error.message.includes("user rejected")) {
             alert("您已取消操作！");
+        } else if (error.reason && errorMessages[error.reason]) {
+            alert(errorMessages[error.reason]);
         } else {
-            alert("下架車輛失敗: " + error.message);
+            alert("確認還車失敗: " + (error.message || "未知錯誤"));
         }
+
     } finally {
         hideLoading();
     }
@@ -351,10 +359,17 @@ async function handleConfirmRental(carId) {
     } catch (error) {
         console.error("確認租車失敗:", error);
         
+        const errorMessages = {
+            "Only renter or owner can confirm start": "無法確認租車，只有租客或車主可以確認開始租車！\n請確認是否已登入正確的帳戶！",
+            "Car has not been rented": "無法確認租車，車輛尚未被租用！\n請確認車輛是否已被預約！",
+        };
+
         if (error.message && error.message.includes("user rejected")) {
             alert("您已取消操作！");
+        } else if (error.reason && errorMessages[error.reason]) {
+            alert(errorMessages[error.reason]);
         } else {
-            alert("確認租車失敗: " + error.message);
+            alert("確認還車失敗: " + (error.message || "未知錯誤"));
         }
     } finally {
         hideLoading();
@@ -410,10 +425,21 @@ async function handleConfirmReturn(carId, endTime, feePerHour) {
     } catch (error) {
         console.error("確認還車失敗:", error);
         
+        const errorMessages = {
+            "Car is not currently rented": "無法確認還車，車輛目前未被租用！\n請確認車輛是否正在出租中！",
+            "Only renter or owner can confirm return": "無法確認還車，只有租客或車主可以確認還車！\n請確認是否已登入正確的帳戶！",
+            "No active rental": "無法確認還車，車輛非租車狀態！\n請確認車輛是否正在出租中！",
+            "Renter needs to pay extra fee": "無法確認還車，需要支付超時費用！\n請確認是否已支付超時費用！",
+            "Insufficient ETH for overtime": "無法確認還車，餘額不足以支付超時費用！\n請確認您的錢包餘額是否足夠！",
+            "Contract has insufficient balance": "無法確認還車，合約餘額不足以支付退款！\n請聯繫管理員處理！",
+        };
+
         if (error.message && error.message.includes("user rejected")) {
             alert("您已取消操作！");
+        } else if (error.reason && errorMessages[error.reason]) {
+            alert(errorMessages[error.reason]);
         } else {
-            alert("確認還車失敗: " + error.message);
+            alert("確認還車失敗: " + (error.message || "未知錯誤"));
         }
     } finally {
         hideLoading();
@@ -446,11 +472,20 @@ async function handleCancelRental(carId) {
         
     } catch (error) {
         console.error("取消預約失敗:", error);
-        
+
+        const cancelErrorMessages = {
+            "Only renter can cancel": "無法下架，只有租客可以取消預約！\n請確認是否已取消預約！",
+            "Rental already started": "無法下架，租賃已經開始！\n請確認車輛是否正在出租中！",
+            "Rental already cancelled or does not exist": "無法下架，車輛已被取消預約或不存在！",
+            "Owner has insufficient balance for refund": "無法取消預約，車主餘額不足以退款！"
+        };
+
         if (error.message && error.message.includes("user rejected")) {
             alert("您已取消操作！");
+        } else if (error.reason && cancelErrorMessages[error.reason]) {
+            alert(cancelErrorMessages[error.reason]);
         } else {
-            alert("取消預約失敗: " + error.message);
+            alert("取消預約失敗: " + (error.message || "未知錯誤"));
         }
     } finally {
         hideLoading();

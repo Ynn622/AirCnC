@@ -457,8 +457,8 @@ $('.upload-form').on("submit", async function(e){
             
             if (error.message.includes("rejected")) {
                 alert("您已取消交易！");
-            } else if (error.reason) {
-                alert(`交易失敗：${error.reason}`);
+            } else if (error.reason == "Price must be greater than zero") {
+                alert("價格必須大於零，請檢查您的輸入！");
             } else {
                 alert("交易失敗，請稍後再試！");
             }
