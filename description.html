@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirCnC 汽機車共享租賃</title>
+    <!-- Title icon -->
+    <link rel="icon" type="image/png" sizes="64x64" href="images/icon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/description.css">
+    <style>
+    </style>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Tocbot CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.3/tocbot.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <a href="index.html">
+                <img src="images/logo.png" alt="logo" class="logo">
+            </a>
+            <div class="brand">
+                <div class="brand-title">AirCnC</div>
+                <div class="brand-subtitle">汽機車共享租賃</div>
+            </div>
+        </div>
+        <div class="hamburger" id="hamburgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="mainNav">
+            <a href="index.html">機車租借</a>
+            <a href="index.html?isScooter=false">汽車租借</a>
+            <a href="upload.html">上傳車輛</a>
+            <a href="description.html">使用說明</a>
+        </nav>
+        <div class="user-icon">
+            <a><i class="fa-solid fa-user" id="user-icon-btn"></i></a>
+        </div>
+    </header>
+    <main>
+        <div class="toc-mobile-icon" id="tocMobileIcon">
+            <i class="fa-solid fa-list-ul"></i>
+        </div>
+        <div class="toc-overlay" id="tocOverlay"></div>
+        
+        <div class="description-layout">
+            <div class="toc-container" id="tocContainer">
+                <div class="toc-close" id="tocClose"><i class="fa-solid fa-xmark"></i></div>
+                <div class="toc-header">目錄</div>
+                <div class="js-toc"></div>
+            </div>
+            
+            <div class="description-container">
+                <h1>🚘 AirCnC 使用者操作手冊</h1>
+                
+                <p class="welcome">
+                    歡迎使用 AirCnC！
+                    這是一個專為汽機車共享打造的區塊鏈平台，您可以輕鬆將自己的車輛出租，或快速租借別人的車輛。以下是詳細的操作流程說明，讓您快速上手！
+                </p>
+                
+                <hr>
+            
+            <div class="section">
+                <div id="section1" class="section-title">🔐 一、開始使用前</div>
+                <div class="section-content">
+                    <h4>✅ 需要準備：</h4>
+                    <ul class="checklist">
+                        <li>一個支援區塊鏈的錢包（建議使用 <a href="https://chromewebstore.google.com/detail/nkbihfbeogaeaoehlefnkodbefgpgknn?utm_source=item-share-cb">MetaMask</a>）</li>
+                        <li>一些測試用的 Sepolia ETH (可從測試水龍頭取得)</li>
+                        <li>使用桌面版 Chrome 瀏覽器，體驗更佳（也可使用MetaMask APP 開啟網頁）</li>
+                        <li>請確保您的瀏覽器已安裝 MetaMask 擴充功能、並連接到 Sepolia 測試網絡</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section2" class="section-title">👤 二、登入區塊鏈錢包</div>
+                <div class="section-content">
+                    <ol class="step-list">
+                        <li>點擊網頁右上角的 「個人頭像」 按鈕</li>
+                        <li>允許網站連接您的錢包帳戶</li>
+                        <li>成功後會顯示您的錢包地址（0x 開頭）</li>
+                    </ol>
+                    <img src="images/des_self.png" alt="連接錢包示意圖" class="des-image">
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section3" class="section-title">🚗 三、車主功能操作說明</div>
+                <div class="section-content">
+                    <h4>上架車輛</h4>
+                    <ol class="step-list">
+                        <li>點選上方選單中的「<a href="upload.html" style="text-decoration: none;">上架車輛</a>」</li>
+                        <li>填寫車輛資訊：
+                            <ul class="feature-list">
+                                <li>車型名稱</li>
+                                <li>車輛描述</li>
+                                <li>租金（每次租借所需費用）</li>
+                            </ul>
+                        </li>
+                        <li>點擊「上架」按鈕</li>
+                        <li>確認錢包中的交易，等待鏈上確認</li>
+                        <li>成功後，您的車輛將出現在「機車租借 / 汽車租借」頁面中</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section4" class="section-title">🚙 四、租客功能操作說明</div>
+                <div class="section-content">
+                    <h4>查看可租車輛</h4>
+                    <ol class="step-list">
+                        <li>進入首頁或「租車」頁面</li>
+                        <li>瀏覽列表中的車輛資訊（如名稱、價格）</li>
+                        <li>點擊「預約租車」按鈕選擇您想要的車輛</li>
+                    </ol>
+                    
+                    <h4>租賃車輛流程</h4>
+                    <ol class="step-list">
+                        <li>點擊「確認預約」後，系統會請您確認交易</li>
+                        <li>錢包跳出視窗後，點選「確認」</li>
+                        <li>等待區塊鏈完成交易</li>
+                        <li>租賃成功後，您可於個人頁面查看租借紀錄</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section5" class="section-title">📋 五、個人資料與管理</div>
+                <div class="section-content">
+                    <h4>查看我的車輛</h4>
+                    <ol class="step-list">
+                        <li>點擊網頁右上角的 「個人頭像」 按鈕</li>
+                        <li>查看您已上架的車輛與租賃狀態</li>
+                        <li>可進行「下架車輛」或「取消租約」</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section6" class="section-title">🔄 六、被預約後流程</div>
+                <div class="section-content">
+                    <h4>交付與還車流程</h4>
+                    <ol class="step-list">
+                        <li>請預約租車人聯繫車主，確認交付機車與鑰匙時間</li>
+                        <li>當雙方見面並交付完成後，請雙方進入個人頁面，按下「確認租車」按鈕，即可開始租車</li>
+                        <li>還車時請車主檢查車輛後，先按下「確認還車」</li>
+                        <li>若有超時則需額外支付費用</li>
+                        <li>當租車人確認還車後，車主也請按下「確認還車」，即可收款！</li>
+                    </ol>
+                    <div class="note-box">
+                        <i class="fa-solid fa-circle-info"></i> 請注意：雙方都確認還車後，系統才會自動完成交易並將款項轉至車主帳戶。
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div id="section7" class="section-title">❓ 常見問題</div>
+                <div class="section-content">
+                    <div class="faq-item">
+                        <div class="faq-question">Q：我需要實際付款嗎？</div>
+                        <div class="faq-answer">A：本平台目前運作在測試鏈上，您可以使用測試幣進行操作，不會有實際金錢損失。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q：我的交易卡住了怎麼辦？</div>
+                        <div class="faq-answer">A：請確認您的網路狀態與錢包是否正常連接，或稍候重新操作。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q：為什麼看不到我剛剛的車輛？</div>
+                        <div class="faq-answer">A：區塊鏈需要時間確認交易，請耐心等候約 10–30 秒後重新整理頁面。</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section contact-info">
+                <div id="section8" class="section-title">📞 聯絡我們</div>
+                <div class="section-content">
+                    <p>如有其他操作問題，歡迎透過信箱與我們聯絡：</p>
+                    <p>📬 aircnc.service@google.com</p>
+                </div>
+            </div>
+            
+            <div class="closing">
+                <p>您已準備好在 AirCnC 上享受智慧車輛共享的便利生活了！</p>
+                <a href="index.html" class="cta-button">🚀 立即體驗 → 前往首頁</a>
+            </div>
+        </div>
+        </div>
+    </main>
+</body>
+<!-- Bootstrap CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+<!-- jQuery CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 響應式漢堡選單 -->
+<script type="module" src="js/menu.js"></script>
+<!-- 連線 -->
+<script src="js/connent.js"></script>
+<!-- 基本設定 -->
+<script src="js/const.js"></script>
+<!-- Tocbot JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.12.3/tocbot.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化 Tocbot
+        tocbot.init({
+            // 要產生目錄的內容區域
+            tocSelector: '.js-toc',
+            // 內容區域的容器
+            contentSelector: '.description-container',
+            // 要產生目錄的標題選擇器
+            headingSelector: '.section-title',
+            // 目錄項的固定類
+            linkClass: 'toc-link',
+            // 當前目錄項的激活類
+            activeListClass: 'is-active-list',
+            // 當前目錄連結的激活類
+            activeLinkClass: 'is-active-link',
+            // 滾動平滑效果
+            scrollSmooth: true,
+            // 滾動頂部間距
+            scrollSmoothOffset: -70,
+            // 指定標題 ID 屬性，使目錄能正確跳轉到對應的標題
+            headingsOffset: 100,
+            // 目錄固定位置相關設定
+            hasInnerContainers: true,
+            // 距離頂部多遠開始固定
+            scrollSmoothOffset: -80,
+            // 固定目錄時的頂部距離
+            collapseDepth: 0,
+            // 是否顯示折疊按鈕
+            orderedList: false,
+            // 是否使用有序列表
+            disableTocScrollSync: false
+        });
+    });
+
+    // 讓目錄隨滾動顯示當前位置
+    window.addEventListener('scroll', function() {
+        tocbot.refresh();
+    });
+    
+    // 手機版目錄控制
+    document.addEventListener('DOMContentLoaded', function() {
+        const tocMobileIcon = document.getElementById('tocMobileIcon');
+        const tocContainer = document.getElementById('tocContainer');
+        const tocClose = document.getElementById('tocClose');
+        const tocOverlay = document.getElementById('tocOverlay');
+        
+        // 點擊目錄圖標顯示目錄
+        tocMobileIcon.addEventListener('click', function() {
+            tocContainer.classList.add('show');
+            tocOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden'; // 防止背景滾動
+        });
+        
+        // 點擊關閉按鈕或遮罩層隱藏目錄
+        tocClose.addEventListener('click', closeToc);
+        tocOverlay.addEventListener('click', closeToc);
+        
+        // 點擊目錄項也會關閉目錄（在移動設備上）
+        const tocLinks = document.querySelectorAll('.js-toc a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    setTimeout(closeToc, 300); // 延遲關閉以便先滾動到目標位置
+                }
+            });
+        });
+        
+        function closeToc() {
+            tocContainer.classList.remove('show');
+            tocOverlay.classList.remove('show');
+            document.body.style.overflow = ''; // 恢復背景滾動
+        }
+        
+        // 處理視窗大小變化
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                tocContainer.classList.remove('show');
+                tocOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+</script>
+</html>

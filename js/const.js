@@ -11,3 +11,8 @@ function hideLoading() {
 function formatBigIntWithCommas(bigIntValue) {
     return bigIntValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+
+// 添加使用者圖標點擊事件
+$('#user-icon-btn').on('click', function () {
+    connect();
+});

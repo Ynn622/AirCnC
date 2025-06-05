@@ -130,11 +130,6 @@ async function getCarDetails(carId) {
 
 // 頁面載入完成時執行
 $(document).ready(async function() {
-    // 添加使用者圖標點擊事件
-    $('#user-icon-btn').on('click', function() {
-        connect();
-    });
-    
     // 檢查是否已連接錢包
     const isConnected = await checkIfConnected();
     console.log("錢包連接狀態:", isConnected);

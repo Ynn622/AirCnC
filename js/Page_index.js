@@ -250,10 +250,6 @@ function setupSearchFunctionality(isScooter) {
 
 // 頁面載入時生成卡片
 window.addEventListener('DOMContentLoaded', function() {
-    // 添加使用者圖標點擊事件
-    document.getElementById('user-icon-btn').addEventListener('click', function() {
-        connect();
-    });
     
     // 從 URL 獲取 - 是否為機車的參數
     const urlParams = new URLSearchParams(window.location.search);

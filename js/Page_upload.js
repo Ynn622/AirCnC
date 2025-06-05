@@ -247,11 +247,6 @@ $(document).ready(async function() {
         minDate: "today", // 限制只能選擇今天及之後的日期
         position: "auto", // 自動調整彈出位置
     });
-    
-    // 添加用戶圖標點擊事件
-    $('#user-icon-btn').on('click', function() {
-        connect(); // 呼叫連接函數
-    });
 });
 
 // 上傳圖片到 Cloudinary
