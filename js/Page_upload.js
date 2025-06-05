@@ -276,10 +276,14 @@ async function uploadToCloudinary(file) {
     }
 }
 
-// 原有的上傳圖片功能
+// 圖片上傳、裁剪功能
 const uploadImgBox = document.getElementById('uploadImgBox');
 const carImgInput = document.getElementById('carImgInput');
+const cropperImage = document.getElementById('cropperImage');
+const cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'));
 let selectedFile = null; // 儲存選擇的檔案
+let croppedImage = null; // 儲存裁剪後的圖片
+let cropper = null;
 
 uploadImgBox.addEventListener('click', () => {
     carImgInput.click();
@@ -288,13 +292,221 @@ uploadImgBox.addEventListener('click', () => {
 carImgInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-        selectedFile = file;
-        // 使用 FileReader 顯示本地預覽
+        // 檢查檔案大小
+        const fileSizeMB = file.size / (1024 * 1024);
+        if (fileSizeMB > 10) {
+            alert("圖片檔案過大，可能會影響載入速度。建議使用小於10MB的圖片。");
+        }
+        
+        // 顯示裁剪模態框
         const reader = new FileReader();
         reader.onload = (e) => {
-            uploadImgBox.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+            // 設置裁剪圖片的來源
+            cropperImage.src = e.target.result;
+            
+            // 打開裁剪模態框
+            cropperModal.show();
+            
+            // 如果存在前一個裁剪實例，則銷毀它
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            // 判斷是否為手機版或平板
+            const isMobile = window.innerWidth < 768;
+            const isTablet = window.innerWidth >= 768 && window.innerWidth < 1200;
+            
+            // 根據設備尺寸調整裁剪器設置
+            const cropperOptions = {
+                aspectRatio: 1, // 裁剪框比例 (1:1)
+                viewMode: 2, // 限制裁剪框，讓整個圖像都可見
+                guides: true, // 顯示裁剪參考線
+                background: true, // 顯示網格背景
+                autoCropArea: 0.9, // 初始裁剪區域大小為圖片的 90%
+                responsive: true, // 在窗口調整時重新渲染
+                minCropBoxWidth: isMobile ? 220 : (isTablet ? 280 : 320), // 根據設備調整裁剪框最小寬度
+                minCropBoxHeight: isMobile ? 220 : (isTablet ? 280 : 320), // 根據設備調整裁剪框最小高度
+                checkOrientation: true, // 檢查圖片方向並自動修正
+                wheelZoomRatio: 0.1, // 滑鼠滾輪縮放比例，更小更精細
+                toggleDragModeOnDblclick: true, // 雙擊切換拖動/裁剪模式
+                highlight: true, // 高光顯示裁剪框
+                cropBoxMovable: true, // 允許移動裁剪框
+                cropBoxResizable: true, // 允許調整裁剪框大小
+                dragMode: 'move', // 預設拖動模式為移動畫布
+                modal: true, // 顯示裁剪區域黑色遮罩
+            };
+            
+            // 非手機版才設置最小容器寬高
+            if (!isMobile) {
+                cropperOptions.minContainerWidth = 800;
+                cropperOptions.minContainerHeight = 500;
+            }
+            
+            // 初始化裁剪器
+            cropper = new Cropper(cropperImage, cropperOptions);
         };
         reader.readAsDataURL(file);
+    }
+});
+
+// 確認裁剪按鈕點擊事件
+document.getElementById('confirmCrop').addEventListener('click', () => {
+    if (cropper) {
+        // 顯示正在處理的提示
+        document.getElementById('confirmCrop').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
+        document.getElementById('confirmCrop').disabled = true;
+        
+        // 獲取原始裁剪區域的尺寸
+        const data = cropper.getData();
+        const originalWidth = Math.round(data.width);
+        const originalHeight = Math.round(data.height);
+        
+        // 判斷是否為手機設備
+        const isMobile = window.innerWidth < 768;
+        
+        // 根據設備不同選擇不同的輸出尺寸，手機上使用較小的尺寸以節省資源
+        let outputWidth, outputHeight;
+        if (isMobile) {
+            // 手機版使用較小的尺寸
+            outputWidth = Math.max(Math.min(originalWidth, 800), 500);
+            outputHeight = Math.max(Math.min(originalHeight, 800), 500);
+        } else {
+            // 桌面版使用較大的尺寸
+            outputWidth = Math.max(Math.min(originalWidth, 1200), 800);
+            outputHeight = Math.max(Math.min(originalHeight, 1200), 800);
+        }
+        
+        // 使用 setTimeout 使處理在UI更新後進行，避免阻塞界面
+        setTimeout(() => {
+            try {
+                // 獲取裁剪的圖片 canvas，使用高質量設置
+                const canvas = cropper.getCroppedCanvas({
+                    width: outputWidth,
+                    height: outputHeight,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+                    maxWidth: 4096, // 防止某些瀏覽器對大尺寸 canvas 的限制
+                    maxHeight: 4096 // 防止某些瀏覽器對大尺寸 canvas 的限制
+                });
+                
+                // 根據設備選擇合適的圖片格式和壓縮率
+                const imageFormat = isMobile ? 'image/jpeg' : 'image/png';
+                const imageQuality = isMobile ? 0.9 : 1.0;
+                
+                // 將裁剪後的圖片轉換為 Blob 對象
+                canvas.toBlob((blob) => {
+                    // 創建預覽圖片
+                    const croppedImageUrl = URL.createObjectURL(blob);
+                    // 顯示裁剪後的圖片預覽
+                    uploadImgBox.innerHTML = `<img src="${croppedImageUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+                    // 保存選擇的文件(裁剪後的Blob)
+                    selectedFile = blob;
+                    // 給Blob添加名稱和類型，以便上傳到Cloudinary
+                    selectedFile.name = isMobile ? 'cropped-image.jpg' : 'cropped-image.png';
+                    selectedFile.lastModified = new Date().getTime();
+                    
+                    console.log(`裁剪後圖片尺寸: ${outputWidth}x${outputHeight}, 格式: ${imageFormat}, 大小約: ${Math.round(blob.size / 1024)}KB`);
+                    
+                    // 恢復按鈕狀態
+                    document.getElementById('confirmCrop').innerHTML = '確認裁剪';
+                    document.getElementById('confirmCrop').disabled = false;
+                    
+                    // 關閉裁剪模態框
+                    cropperModal.hide();
+                }, imageFormat, imageQuality);
+            } catch (error) {
+                console.error('裁剪過程中發生錯誤:', error);
+                alert('圖片裁剪失敗，請重試！');
+                
+                // 恢復按鈕狀態
+                document.getElementById('confirmCrop').innerHTML = '確認裁剪';
+                document.getElementById('confirmCrop').disabled = false;
+            }
+        }, 100);
+    }
+});
+
+// 裁剪控制按鈕事件處理
+document.querySelector('.cropper-controls').addEventListener('click', function(event) {
+    const target = event.target.closest('[data-method]');
+    if (!target) return;
+    
+    const method = target.getAttribute('data-method');
+    const option = target.getAttribute('data-option');
+    
+    if (!cropper) return;
+    
+    switch (method) {
+        case 'zoom':
+            cropper.zoom(parseFloat(option));
+            break;
+        case 'rotate':
+            cropper.rotate(parseFloat(option));
+            break;
+        case 'scaleX':
+            const scaleX = cropper.getData().scaleX;
+            cropper.scaleX(scaleX === 1 ? -1 : 1);
+            break;
+        case 'scaleY':
+            const scaleY = cropper.getData().scaleY;
+            cropper.scaleY(scaleY === 1 ? -1 : 1);
+            break;
+        case 'reset':
+            cropper.reset();
+            break;
+    }
+});
+
+// 窗口大小變化時調整裁剪器
+window.addEventListener('resize', () => {
+    if (cropper) {
+        // 當視窗大小變化時，重新調整裁剪器尺寸
+        setTimeout(() => {
+            cropper.resize();
+            
+            // 檢查當前裝置類型，並調整裁剪大小和比例
+            const isMobile = window.innerWidth < 768;
+            const isTablet = window.innerWidth >= 768 && window.innerWidth < 1200;
+            
+            // 根據設備類型調整容器的顯示方式
+            if (isMobile) {
+                document.querySelector('.img-container').style.height = '50vh';
+            } else if (isTablet) {
+                document.querySelector('.img-container').style.height = '65vh';
+            } else {
+                document.querySelector('.img-container').style.height = '80vh';
+            }
+        }, 200);
+    }
+});
+
+// 監聽裁剪模態框顯示事件，確保裁剪器初始化後正確顯示
+document.getElementById('cropperModal').addEventListener('shown.bs.modal', () => {
+    if (cropper) {
+        // 確保裁剪器在模態框顯示後進行調整
+        setTimeout(() => {
+            cropper.resize();
+            
+            // 處理模態框視窗大小調整
+            const modalContent = document.querySelector('.modal-xl .modal-content');
+            const modalDialog = document.querySelector('.modal-xl .modal-dialog');
+            const imgContainer = document.querySelector('.img-container');
+            const isMobile = window.innerWidth < 768;
+            
+            if (!isMobile) {
+                // 桌面版視窗優化
+                modalDialog.style.display = 'flex';
+                modalDialog.style.alignItems = 'center';
+                modalDialog.style.justifyContent = 'center';
+                modalDialog.style.minHeight = '100vh';
+                imgContainer.style.maxHeight = window.innerHeight * 0.8 + 'px';
+            } else {
+                // 移動版視窗優化
+                modalDialog.style.margin = '10px auto';
+            }
+        }, 300);
     }
 });
 
@@ -373,11 +585,30 @@ $('.upload-form').on("submit", async function(e){
     }
     
     try {
-        // 顯示上傳中狀態
-        uploadImgBox.innerHTML = '<div class="uploading">上傳中...</div>';
+        // 判斷是否為手機設備
+        const isMobile = window.innerWidth < 768;
         
-        // 上傳到 Cloudinary
-        const imageUrl = await uploadToCloudinary(selectedFile);
+        // 顯示上傳中狀態，手機版顯示更簡化的提示
+        if (isMobile) {
+            uploadImgBox.innerHTML = '<div class="uploading"><div class="spinner"></div>上傳中...</div>';
+        } else {
+            uploadImgBox.innerHTML = '<div class="uploading"><div class="spinner"></div>上傳中，請稍候...</div>';
+        }
+        
+        // 檢查文件大小，如果太大可能需要額外壓縮
+        const fileSizeMB = selectedFile.size / (1024 * 1024);
+        
+        // 根據設備和文件大小決定是否需要進一步壓縮
+        let fileToUpload = selectedFile;
+        
+        if (fileSizeMB > (isMobile ? 5 : 10)) {
+            console.warn(`檔案大小為 ${fileSizeMB.toFixed(2)}MB，${isMobile ? '在手機上' : ''}可能上傳較慢或失敗`);
+            // 這裡可以添加額外的壓縮邏輯，但為了保持圖片質量，我們暫時不實施
+        }
+        
+        console.log(`準備上傳的圖片：大小 ${Math.round(selectedFile.size / 1024)}KB`);
+        // 上傳裁剪後的圖片到 Cloudinary
+        const imageUrl = await uploadToCloudinary(fileToUpload);
         
         // 更新預覽為上傳後的圖片
         uploadImgBox.innerHTML = `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -479,3 +710,126 @@ $('.upload-form').on("submit", async function(e){
         uploadImgBox.innerHTML = '<i class="fa-solid fa-plus"></i><span>點擊上傳圖片</span>';
     }
 })
+
+// 優化移動設備上的交互體驗
+function setupMobileEnhancements() {
+    const isMobile = window.innerWidth < 768;
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1200;
+    
+    // 針對桌面版進行優化
+    if (!isMobile && !isTablet) {
+        // 給桌面版增加鍵盤快捷鍵
+        document.addEventListener('keydown', function(e) {
+            if (!cropper || !document.getElementById('cropperModal').classList.contains('show')) return;
+            
+            switch (e.key) {
+                case 'ArrowLeft': // 向左旋轉
+                    if (e.ctrlKey || e.metaKey) cropper.rotate(-90);
+                    break;
+                case 'ArrowRight': // 向右旋轉
+                    if (e.ctrlKey || e.metaKey) cropper.rotate(90);
+                    break;
+                case '=': // 放大 (= 鍵，通常與 + 在同一個鍵位)
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault(); // 防止觸發瀏覽器原生縮放
+                        cropper.zoom(0.1);
+                    }
+                    break;
+                case '-': // 縮小
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault(); // 防止觸發瀏覽器原生縮放
+                        cropper.zoom(-0.1);
+                    }
+                    break;
+                case 'r': // 重置
+                    cropper.reset();
+                    break;
+            }
+        });
+    }
+    
+    if (isMobile) {
+        // 在移動設備上，檢測抖動設備的動作來旋轉圖片
+        let lastAcceleration = { x: 0, y: 0, z: 0 };
+        let shakeThreshold = 15;
+        let lastShake = 0;
+        
+        // 監聽設備運動事件
+        window.addEventListener('devicemotion', function(event) {
+            if (!cropper || !document.getElementById('cropperModal').classList.contains('show')) return;
+            
+            let now = Date.now();
+            if ((now - lastShake) < 800) return; // 避免過於頻繁的觸發
+            
+            const acceleration = event.accelerationIncludingGravity;
+            
+            const deltaX = Math.abs(acceleration.x - lastAcceleration.x);
+            const deltaY = Math.abs(acceleration.y - lastAcceleration.y);
+            const deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
+            
+            if ((deltaX > shakeThreshold && deltaY > shakeThreshold) || 
+                (deltaX > shakeThreshold && deltaZ > shakeThreshold) || 
+                (deltaY > shakeThreshold && deltaZ > shakeThreshold)) {
+                
+                lastShake = now;
+                // 抖動設備時旋轉圖片90度
+                cropper.rotate(90);
+            }
+            
+            lastAcceleration = { 
+                x: acceleration.x, 
+                y: acceleration.y, 
+                z: acceleration.z 
+            };
+        });
+        
+        // 優化裁剪模態框在移動設備上的顯示
+        document.getElementById('cropperModal').addEventListener('shown.bs.modal', function() {
+            // 強制滾動到頂部，避免在某些移動設備上的定位問題
+            window.scrollTo(0, 0);
+            // 避免頁面可滾動，專注於裁剪操作
+            document.body.style.overflow = 'hidden';
+            // 在移動設備上確保模態框正確置中顯示
+            document.querySelector('.modal-dialog').style.marginTop = '0';
+            document.querySelector('.modal-dialog').style.marginBottom = '0';
+            // 優化移動端裁剪體驗
+            document.querySelector('.img-container').style.height = '50vh';
+            
+            // 增加提示訊息
+            const tipElement = document.createElement('div');
+            tipElement.className = 'mobile-gesture-tip';
+            tipElement.style.cssText = 'position: fixed; bottom: 70px; left: 0; right: 0; text-align: center; color: #666; font-size: 12px; background: rgba(255,255,255,0.7); padding: 8px; z-index: 2000; border-radius: 4px; margin: 0 auto; width: 90%;';
+            tipElement.innerHTML = '使用雙指可以放大縮小，抖動手機可旋轉圖片';
+            document.body.appendChild(tipElement);
+            
+            // 3秒後隱藏提示
+            setTimeout(() => {
+                if (document.body.contains(tipElement)) {
+                    tipElement.style.opacity = '0';
+                    tipElement.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        if (document.body.contains(tipElement)) {
+                            document.body.removeChild(tipElement);
+                        }
+                    }, 500);
+                }
+            }, 3000);
+        });
+        
+        document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function() {
+            // 恢復頁面滾動
+            document.body.style.overflow = '';
+            
+            // 移除可能殘留的提示元素
+            const tip = document.querySelector('.mobile-gesture-tip');
+            if (tip && document.body.contains(tip)) {
+                document.body.removeChild(tip);
+            }
+        });
+    }
+}
+
+// 在頁面載入時設置移動設備優化
+$(document).ready(function() {
+    setupMobileEnhancements();
+});

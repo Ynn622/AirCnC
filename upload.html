@@ -16,10 +16,12 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- OpenLayers CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
-    <!-- OpenLayers JS -->
-    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- OpenLayers JS -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
 </head>
 <body>
     <header>
@@ -132,6 +134,65 @@
         </div>
     </div>
 
+    <!-- 圖片裁剪模態框 -->
+    <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropperModalLabel">
+                        <span class="d-none d-md-inline">裁剪圖片</span>
+                        <span class="d-inline d-md-none">調整圖片</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <img id="cropperImage" style="max-width: 100%;">
+                    </div>
+                    <div class="cropper-tip d-md-none text-center text-muted mt-2">
+                        <small>提示：可使用雙指縮放調整畫面</small>
+                    </div>
+                    <div class="cropper-controls mt-3">
+                        <div class="btn-group me-2 zoom-controls">
+                            <button type="button" class="btn btn-outline-primary" data-method="zoom" data-option="0.1" title="放大">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-method="zoom" data-option="-0.1" title="縮小">
+                                <i class="fa-solid fa-magnifying-glass-minus"></i>
+                            </button>
+                        </div>
+                        <div class="btn-group me-2 rotate-controls">
+                            <button type="button" class="btn btn-outline-primary" data-method="rotate" data-option="-90" title="向左旋轉">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-method="rotate" data-option="90" title="向右旋轉">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                        <div class="btn-group flip-controls">
+                            <button type="button" class="btn btn-outline-primary" data-method="scaleX" data-option="-1" title="水平翻轉">
+                                <i class="fa-solid fa-arrows-left-right"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-method="scaleY" data-option="-1" title="垂直翻轉">
+                                <i class="fa-solid fa-arrows-up-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" data-method="reset" title="重設裁剪">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="quality-tip d-none d-md-block text-center text-muted mt-3">
+                        <small>使用高品質模式裁剪，確保最佳效果</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmCrop">確認裁剪</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Bootstrap JS -->
@@ -144,6 +205,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- 繁體中文語系 -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <!-- ethers.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js"></script>
     <!-- 智能合約ABI -->
@@ -155,4 +218,4 @@
     <!-- 上傳車輛 -->
     <script src="js/Page_upload.js"></script>
 </body>
-</html> 
+</html>
