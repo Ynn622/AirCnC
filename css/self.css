@@ -77,8 +77,12 @@
     gap: 8px;
 }
 
+.card-info a {
+    text-decoration: none;
+}
+
 .cancel-btn {
-    background: #d3b6b6;
+    background: #cb8181;
     color: #222;
     font-size: 1.1em;
     font-weight: bold;

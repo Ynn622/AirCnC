@@ -178,7 +178,7 @@ function renderRentalData(filter) {
                         <div class="status-info">${rentalStatusInfo.icon} ${rentalStatusInfo.text}</div>
                         <div><b>車主</b>：${carDetails.owner ? carDetails.owner.slice(0,8) + '...' : '未知'}</div>
                         <div><b>地址</b>：${carDetails.locate || '未知'} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(carDetails.locate || '')}', '_blank')"></i></div>
-                        <div><b>聯絡電話</b>：${carDetails.phone || '未知'}</div>
+                        <div><b>聯絡電話</b>：<a href="tel:${carDetails.phone}">${carDetails.phone || '未知'}</a></div>
                         <div><b>車牌</b>：${carDetails.plate || '未知'}</div>
                         <div><b>計費方式</b>：$${formatBigIntWithCommas(carDetails.pricePerHour)} wei/h</div>
                         <div><b>預約日期</b>：${timeToStr(rental.startTimestamp)} ~ ${timeToStr(rental.endTimestamp)}</div>
