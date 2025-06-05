@@ -19,6 +19,7 @@
     margin-top: 30px;
     align-self: flex-start;
     transition: all 0.3s ease;
+    overflow: hidden; /* 確保目錄內容不會超出容器 */
 }
 
 .toc-mobile-icon {
@@ -71,6 +72,17 @@
 
 .js-toc::-webkit-scrollbar-thumb:hover {
     background: #0077b6;
+}
+
+.js-toc ol {
+    padding-left: 10px;
+    margin: 0;
+}
+
+.js-toc li {
+    position: relative;
+    list-style: none;
+    margin-bottom: 0;
 }
 
 .toc-link {
@@ -127,6 +139,7 @@
     padding: 25px;
     margin-bottom: 30px;
     border-left: 5px solid #0077b6;
+    overflow: hidden; /* 確保內容不會超出邊框 */
 }
 
 .section-title {
