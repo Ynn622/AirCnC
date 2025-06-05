@@ -236,6 +236,10 @@ function getButtonByStatus(car) {
         case 1: // 已上傳待租
             return `<div><button class="remove-btn" data-carid="${car.carId}">下架車輛</button></div>`;
         case 2: // 已被預約
+            if (car.rentalDetails.ownerConfirmed) {
+                // 如果車主已確認，顯示「已確認租車」按鈕
+                return `<div><button class="confirm-btn" disabled>已確認租車</button></div>`;
+            } 
             return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
             if (car.rentalDetails.renterConfirmed) {
