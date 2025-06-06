@@ -29,6 +29,9 @@ function timeToStr(timestamp) {
 
 // 標籤切換功能
 function setupTabsAndFilters() {
+    // 車輛類型變數 (true為汽車，false為機車)
+    window.isCarType = false;
+    
     // 標籤切換
     $('.tab-btn').click(function() {
         $('.tab-btn').removeClass('active');
@@ -44,6 +47,15 @@ function setupTabsAndFilters() {
             $('#rentalDataContainer').addClass('active');
             updateFilterOptions('rental');
         }
+    });
+    
+    // 車輛類型開關事件
+    $('#vehicleTypeSwitch').change(function() {
+        window.isCarType = $(this).is(':checked');
+        console.log("切換車輛類型：", window.isCarType ? "汽車" : "機車");
+        
+        // 觸發過濾器變更事件來更新顯示
+        $('#dataFilter').trigger('change');
     });
     
     // 過濾器變更事件
@@ -88,8 +100,17 @@ function renderOwnerData(filter) {
     const container = $('#ownerDataContainer');
     container.empty();
     
-    // 這裡從 MyCarList 獲取資料並根據 filter 進行過濾
+    // 獲取當前選擇的車輛類型 (true為汽車，false為機車)
+    const isCarType = window.isCarType;
+    console.log("渲染車主資料，車輛類型:", isCarType ? "汽車" : "機車");
+    
+    // 這裡從 MyCarList 獲取資料並根據 filter 和車輛類型進行過濾
     MyCarList.forEach(car => {
+        // 先根據車輛類型過濾
+        if (car.isscooter == isCarType) {
+            return; // 如果車輛類型不匹配，則跳過此車輛
+        }
+        
         // 根據 filter 條件過濾
         let shouldShow = false;
         
@@ -144,10 +165,19 @@ function renderRentalData(filter) {
     const container = $('#rentalDataContainer');
     container.empty();
     
+    // 獲取當前選擇的車輛類型 (true為汽車，false為機車)
+    const isCarType = window.isCarType;
+    console.log("渲染租賃資料，車輛類型:", isCarType ? "汽車" : "機車");
+    
     // 這裡從 RentalsList 獲取資料並根據 filter 進行過濾
     RentalsList.forEach(rental => {
         // 使用租賃數據中包含的車輛詳情
         const carDetails = rental.carDetails || {};
+        
+        // 先根據車輛類型過濾
+        if (carDetails.isscooter == isCarType) {
+            return; // 如果車輛類型不匹配，則跳過此車輛
+        }
 
         // 根據 filter 條件過濾
         let shouldShow = false;
@@ -536,6 +566,10 @@ $(async function() {
         
         // 設置標籤和過濾器
         setupTabsAndFilters();
+        
+        // 設置車輛類型開關的默認狀態（默認為機車）
+        window.isCarType = false;
+        $('#vehicleTypeSwitch').prop('checked', false);
         
         // 重新獲取資料
         await refreshData();
