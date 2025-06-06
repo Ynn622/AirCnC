@@ -263,7 +263,14 @@ input:checked + .slider:before {
     transition: background 0.2s;
 }
 
-.btn-ed {
+button:disabled {
     cursor: not-allowed;
+    background: #aaaaaa;
+}
+
+button:disabled:hover {
+    cursor: not-allowed;
+    background: #ccc;
+    transition: background 0.2s;
 }
 
