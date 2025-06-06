@@ -5,26 +5,39 @@ let selectedLocation = null;
 
 // 格式化地址
 function formatAddress(address) {
-    // 移除郵遞區號和國家
-    let parts = address.split(',').map(part => part.trim());
-    parts = parts.filter(part => !part.match(/^\d{3,6}$/) && part !== '臺灣');
-    
-    // 反轉地址順序
-    parts.reverse();
-    
-    // 組合地址
-    let formattedAddress = '';
-    if (parts.length >= 2) {
-        // 主要地址（區、里、路）
-        formattedAddress = parts.slice(0, -1).join('');
-        // 加入地標（如果有的話）
-        if (parts[parts.length - 1].includes('站') || parts[parts.length - 1].includes('路')) {
-            formattedAddress = parts[parts.length - 1] + ' ' + formattedAddress;
-        }
-    } else {
-        formattedAddress = parts.join('');
-    }
-    
+    if (!address) return '地址未知';
+    const {
+        country,         // 中華民國 或 Taiwan
+        state,           // 台灣
+        county,          // 新竹縣、台中市等
+        city,            // 台北市（有些縣轄市也會出現在 city）
+        suburb,          // 區，如中山區、大安區
+        town,            // 鎮、鄉
+        village,         // 村、里
+        neighbourhood,   // 鄰、社區
+        road,            // 路、街
+        pedestrian,      // 步道名稱
+        house_number     // 門牌號碼
+    } = address;
+
+    // 組合行政區：從大到小
+    const adminParts = [
+        state,
+        county || city,                          // 有些資料是用 county，有些是 city
+        suburb || town || village || neighbourhood
+    ];
+
+    // 組合街道與門牌
+    const streetParts = [
+        road || pedestrian || '',                // 道路名稱
+        house_number ? house_number + '號' : ''
+    ];
+
+    // 過濾掉空字串並串接
+    const formattedAddress = [...adminParts, ...streetParts]
+        .filter(Boolean) // 過濾 undefined/null/空字串
+        .join('');
+    console.log('格式化後的地址:', formattedAddress);
     return formattedAddress;
 }
 
@@ -88,7 +101,7 @@ function initMap() {
                         .then(response => response.json())
                         .then(data => {
                             selectedLocation = {
-                                address: formatAddress(data.display_name),
+                                address: formatAddress(data.address),
                                 lat: lat,
                                 lng: lon
                             };
@@ -162,7 +175,7 @@ function initMap() {
             .then(response => response.json())
             .then(data => {
                 selectedLocation = {
-                    address: formatAddress(data.display_name),
+                    address: formatAddress(data.address),
                     lat: lonLat[1],
                     lng: lonLat[0]
                 };
@@ -197,11 +210,25 @@ function initMap() {
                         });
                         markerLayer.getSource().addFeature(feature);
 
+                        // 初始化 selectedLocation
                         selectedLocation = {
-                            address: formatAddress(result.display_name),
+                            // 如果結果中有 address 欄位，使用它，否則使用 display_name
+                            address: result.address ? formatAddress(result.address) : result.display_name,
                             lat: parseFloat(result.lat),
                             lng: parseFloat(result.lon)
                         };
+                        
+                        // 如果沒有正確的地址，嘗試使用反向地理編碼獲取完整地址資訊
+                        if (!result.address) {
+                            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.lat}&lon=${result.lon}&zoom=18&addressdetails=1`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.address) {
+                                        selectedLocation.address = formatAddress(data.address);
+                                    }
+                                })
+                                .catch(error => console.error('獲取詳細地址失敗:', error));
+                        }
                     }
                 });
         }
