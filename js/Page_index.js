@@ -47,7 +47,7 @@ async function fetchAvailableCars(isscooter) {
         for (const carId of availableCarIds) {
             try {
                 const car = await contract.getCar(carId);
-                if (car.isscooter===isscooter) {
+                if (car.isscooter === isscooter && car.ldcanstart > Math.floor(Date.now() / 1000)) {
                     // 將合約返回的數據轉換為易於使用的對象
                     vehiclesData.push({
                         id: Number(car.carId),

@@ -112,7 +112,7 @@ function renderOwnerData(filter) {
         }
         
         if(shouldShow) {
-            const statusInfo = getStatusInfo(car.status);
+            const statusInfo = getStatusInfo(car);
             const card = $(`
                 <div class="uploaded-card">
                     <img src="${car.imageURL}" alt="${car.model}" class="vehicle-img" onerror="this.src='images/scooter.jpg'">
@@ -198,9 +198,12 @@ function renderRentalData(filter) {
 }
 
 // 根據狀態取得車輛狀態資訊
-function getStatusInfo(status) {
-    switch(status) {
+function getStatusInfo(car) {
+    switch(car.status) {
         case 1: // 已上傳待租
+            if (car.ldcanstart < Math.floor(Date.now() / 1000)) {
+                return {icon: '<i class="fa-solid fa-circle-exclamation"></i>', text: '已上傳待租（過期）' };
+            }
             return {icon: '<i class="fa-solid fa-circle-up"></i>', text: '已上傳待租' };
         case 2: // 已被預約
             return {icon: '<i class="fa-solid fa-calendar-check"></i>', text: '已被預約' };
@@ -226,7 +229,7 @@ function getRentalStatusInfo(rental) {
         case 4: // 已結束租用
             return {icon: '<i class="fa-solid fa-clock-rotate-left"></i>', text: '已結束租用'};
         default:
-            return { icon: '<i class="fa-solid fa-circle-question"></i>', text: '等待確認' };
+            return { icon: '<i class="fa-solid fa-circle-question"></i>', text: '未知狀態' };
     }
 }
 
