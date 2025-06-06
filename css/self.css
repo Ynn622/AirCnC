@@ -81,61 +81,6 @@
     text-decoration: none;
 }
 
-.cancel-btn {
-    background: #cb8181;
-    color: #222;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 30px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.2s;
-}
-
-.cancel-btn:hover {
-    background: #b88b8b;
-    color: #fff;
-}
-
-.confirm-return-btn {
-    background: #e0c97a;
-    color: #222;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 30px;
-    cursor: pointer;
-    margin-right: 10px;
-    margin-top: 10px;
-    transition: background 0.2s;
-}
-
-.confirm-return-btn:hover {
-    background: #bfae5e;
-    color: #fff;
-}
-
-.remove-btn {
-    background: #d3b6b6;
-    color: #222;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 30px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.2s;
-}
-
-.remove-btn:hover {
-    background: #b88b8b;
-    color: #fff;
-}
-
 /* 標籤和過濾器樣式 */
 .profile-tabs {
     display: flex;
@@ -193,24 +138,6 @@
     font-style: italic;
 }
 
-.confirm-btn {
-    background: #6bbd6e;
-    color: #fff;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 30px;
-    cursor: pointer;
-    margin-right: 10px;
-    margin-top: 10px;
-    transition: background 0.2s;
-}
-
-.confirm-btn:hover {
-    background: #5aa95d;
-}
-
 .data-container {
     display: none;
 }
@@ -218,3 +145,55 @@
 .data-container.active {
     display: block;
 }
+
+/* 按鈕樣式 */
+.confirm-btn {
+    background: #6bbd6e;
+    color: #fff;
+}
+
+.confirm-btn:hover {
+    background: #5aa95d;
+}
+
+.confirm-return-btn {
+    background: #e0c97a;
+    color: #222;
+}
+
+.confirm-return-btn:hover {
+    background: #bfae5e;
+    color: #fff;
+}
+
+.remove-btn,
+.cancel-btn {
+    background: #dc3545;
+    color: #f2f2f2;
+}
+
+.remove-btn:hover,
+.cancel-btn:hover {
+    background: #ff3535;
+    color: #fff;
+}
+
+.confirm-btn,
+.confirm-return-btn,
+.remove-btn,
+.cancel-btn {
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 25px;
+    cursor: pointer;
+    margin-top: 8px;
+    margin-right: 8px;
+    transition: background 0.2s;
+}
+
+.btn-ed {
+    cursor: not-allowed;
+}
+

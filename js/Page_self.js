@@ -238,13 +238,13 @@ function getButtonByStatus(car) {
         case 2: // 已被預約
             if (car.rentalDetails.ownerConfirmed) {
                 // 如果車主已確認，顯示「已確認租車」按鈕
-                return `<div><button class="confirm-btn" disabled>已確認租車</button></div>`;
+                return `<div><button class="btn-ed confirm-btn" disabled>已確認租車</button></div>`;
             } 
             return `<div><button class="confirm-btn" data-carid="${car.carId}">確認租車</button></div>`;
         case 3: // 出租中
             if (car.rentalDetails.renterConfirmed) {
                 // 如果租戶未確認，顯示「租客未還車」按鈕
-                return `<div><button class="confirm-return-btn" disabled>租客未還車</button></div>`;
+                return `<div><button class="btn-ed confirm-return-btn" disabled>租客未還車</button></div>`;
             }
             return `<div><button class="confirm-return-btn" data-carid="${car.carId}" data-endTime="${car.rentalDetails.endTimestamp}">確認還車</button></div>`;
         case 4: // 已結束租車
@@ -261,7 +261,7 @@ function getRentalButtonByStatus(rental) {
     if (rental.carDetails.status === 3) {
         if(!rental.renterConfirmed) {
             // 如果租賃活躍但租戶確認為假，顯示「已確認還車」按鈕
-            return `<div><button class="confirm-return-btn" disabled>已確認還車</button></div>`;
+            return `<div><button class="btn-ed confirm-return-btn" disabled>已確認還車</button></div>`;
         } else {
             // 正常租賃中，顯示「確認還車」按鈕
             return `<div><button class="confirm-return-btn" data-carid="${rental.carId}" data-endTime="${rental.endTimestamp}" data-feePerHour="${rental.carDetails.pricePerHour}">確認還車</button></div>`;
@@ -270,7 +270,7 @@ function getRentalButtonByStatus(rental) {
         // 未過期的預約
         if(rental.renterConfirmed) {
             // 如果租戶已確認，顯示已確認按鈕（不可點擊）和取消預約按鈕
-            return `<div><button class="confirm-btn" disabled>已確認租車</button> <button class="cancel-btn" data-carid="${rental.carId}">取消預約</button></div>`;
+            return `<div><button class="btn-ed confirm-btn" disabled>已確認租車</button> <button class="cancel-btn" data-carid="${rental.carId}">取消預約</button></div>`;
         } else {
             // 如果租戶未確認，顯示確認租車按鈕和取消預約按鈕
             return `<div><button class="confirm-btn" data-carid="${rental.carId}">確認租車</button> <button class="cancel-btn" data-carid="${rental.carId}">取消預約</button></div>`;
