@@ -192,6 +192,7 @@ function setupSearchFunctionality(isScooter) {
         locale: "zh", // 繁體中文
         dateFormat: "Y-m-d",
         position: "auto", // 自動調整彈出位置
+        minDate: "today", // 限制只能選擇今天及之後的日期
         onChange: function(selectedDates) {
             // 日期選擇變更後立即執行搜尋
             if (selectedDates.length === 2) {

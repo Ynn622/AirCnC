@@ -77,12 +77,12 @@
                         <label>型號</label>
                         <input type="text" id="model-text" placeholder="請輸入型號">
                         <label>車牌</label>
-                        <input type="text" id="plate-text" placeholder="請輸入車牌">
+                        <input type="text" minlength="5" maxlength="8" id="plate-text" placeholder="請輸入車牌">
                         <label>聯絡電話</label>
-                        <input type="text" id="phone-text" placeholder="請輸入聯絡電話">
+                        <input type="text" minlength="8" maxlength="10" id="phone-text" placeholder="請輸入聯絡電話">
                         <label>費用</label>
                         <div class="input-group">
-                            <input type="number" id="fee-text" placeholder="請輸入費用">
+                            <input type="number" min="1" id="fee-text" placeholder="請輸入費用">
                             <select id="fee-unit">
                                 <option>Ether</option>
                                 <option>Finney</option>
