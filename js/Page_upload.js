@@ -34,9 +34,14 @@ function formatAddress(address) {
     ];
 
     // 過濾掉空字串並串接
-    const formattedAddress = [...adminParts, ...streetParts]
+    let formattedAddress = [...adminParts, ...streetParts]
         .filter(Boolean) // 過濾 undefined/null/空字串
         .join('');
+    
+    if (formattedAddress.charAt(formattedAddress.length - 2) === '號') {
+        // 如果最後一個字是「號」，則去掉
+        formattedAddress = formattedAddress.slice(0, -1);
+    }
     console.log('格式化後的地址:', formattedAddress);
     return formattedAddress;
 }
