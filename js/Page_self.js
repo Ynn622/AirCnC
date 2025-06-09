@@ -26,6 +26,19 @@ function timeToStr(timestamp) {
     return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
+// 計算時間差（小時）
+function calculateTimeDifference(startTimestamp, endTimestamp) {
+    const startDate = new Date(startTimestamp * 1000);
+    const endDate = new Date(endTimestamp * 1000);
+    
+    // 計算時間差（毫秒）
+    const timeDiff = endDate - startDate;
+    
+    // 將時間差轉換為小時
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    
+    return hours;
+}
 
 // 標籤切換功能
 function setupTabsAndFilters() {
@@ -134,6 +147,8 @@ function renderOwnerData(filter) {
         
         if(shouldShow) {
             const statusInfo = getStatusInfo(car);
+            const startTimestamp = car.rentalDetails.startTimestamp;
+            const endTimestamp = car.rentalDetails.endTimestamp;
             const card = $(`
                 <div class="uploaded-card">
                     <img src="${car.imageURL}" alt="${car.model}" class="vehicle-img" onerror="this.src='images/scooter.jpg'">
@@ -143,8 +158,9 @@ function renderOwnerData(filter) {
                         <div><b>地址</b>：${car.locate} <i class="fa-solid fa-location-dot" style="cursor:pointer" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(car.locate)}', '_blank')"></i></div>
                         <div><b>車牌</b>：${car.plate}</div>
                         <div><b>計費方式</b>：$${formatBigIntWithCommas(car.pricePerHour)} wei/h</div>
-                        ${(car.status >= 2 && car.status <= 4) ? `<div><b>預約人</b>：${car.rentalDetails.renter ? car.rentalDetails.renter.slice(0, 8) + '...' : '未知'}</div>
-                                                                <div><b>被預約日期</b>：${timeToStr(car.rentalDetails.startTimestamp)} ~ ${timeToStr(car.rentalDetails.endTimestamp)}</div>` : 
+                        ${(car.status >= 2 && car.status <= 4) ? `<div><b>總費用</b>：$${formatBigIntWithCommas(car.rentalDetails.ftotalCost)} wei（共${calculateTimeDifference(startTimestamp, endTimestamp)}小時）</div>
+                                                                <div><b>預約人</b>：${car.rentalDetails.renter ? car.rentalDetails.renter.slice(0, 8) + '...' : '未知'}</div>
+                                                                <div><b>被預約日期</b>：${timeToStr(startTimestamp)} ~ ${timeToStr(endTimestamp)}</div>` : 
                                         `<div><b>提供日期</b>：${timeToStr(car.fdcanstart)} ~ ${timeToStr(car.ldcanstart)}</div>`}
                         ${getButtonByStatus(car)}
                     </div>
