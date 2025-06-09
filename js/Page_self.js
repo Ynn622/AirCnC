@@ -187,11 +187,11 @@ function renderRentalData(filter) {
             case 'all':
                 shouldShow = true;
                 break;
+            case 'reserved':
+                shouldShow = rental.carDetails.status === 2; // 已預約
+                break;
             case 'renting':
                 shouldShow = rental.carDetails.status === 3; // 租賃進行中
-                break;
-            case 'reserved':
-                shouldShow = rental.carDetails.status === 2; // 已預約未開始
                 break;
             case 'history':
                 shouldShow = rental.carDetails.status === 4; // 已結束
@@ -280,8 +280,6 @@ function getButtonByStatus(car) {
                 return `<div><button class="confirm-return-btn" disabled>租客未還車</button></div>`;
             }
             return `<div><button class="confirm-return-btn" data-carid="${car.carId}" data-endTime="${car.rentalDetails.endTimestamp}">確認還車</button></div>`;
-        case 4: // 已結束租車
-            return '';
         default:
             return '';
     }

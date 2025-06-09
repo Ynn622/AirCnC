@@ -268,9 +268,7 @@ $(document).ready(async function() {
                 
                 // 獲取合約實例
                 const contract = await getContractInstance();
-                if (!contract) {
-                    return;
-                }
+                if (!contract) return;
                 
                 console.log("租賃信息:", {
                     carId: vehicleId,
@@ -279,8 +277,7 @@ $(document).ready(async function() {
                     endTimestamp: rentCalc.endTimestamp
                 });
                 
-                // 調用合約的 rentCar 方法
-                // 估算 gas 並添加一個安全緩衝區
+                // 調用合約的 rentCar 方法 (估算 gas 並添加一個安全緩衝區)
                 const gasEstimate = await contract.rentCar.estimateGas(
                     vehicleId,
                     rentCalc.total,
@@ -296,10 +293,8 @@ $(document).ready(async function() {
                     rentCalc.total,
                     rentCalc.startTimestamp,
                     rentCalc.endTimestamp,
-                    { 
-                        value: rentCalc.total,
-                        gasLimit: gasLimit
-                    }
+                    { value: rentCalc.total,
+                      gasLimit: gasLimit }
                 );
                 
                 // 等待交易確認
@@ -313,13 +308,12 @@ $(document).ready(async function() {
                 
             } catch (error) {
                 console.error("租車失敗:", error);
-                
+                // 根據錯誤類型顯示不同的提示
                 if (error.message && error.message.includes("user rejected")) {
                     alert("您已取消交易！");
                 } else if (error.code === "INSUFFICIENT_FUNDS" || (error.message && error.message.includes("insufficient funds"))) {
                     alert("您的錢包餘額不足！\n請確保您有足夠的以太幣支付租車費用和交易手續費。");
                 } else if (error.message && error.message.includes("execution reverted")) {
-                    // 智能合約執行失敗
                     if (error.reason === "Car is not available") {
                         alert("此車輛目前不可租用，可能已被他人預約。");
                     } else if (error.reason === "Owner cannot rent own car") {
