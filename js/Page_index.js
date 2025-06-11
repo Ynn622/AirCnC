@@ -20,10 +20,12 @@ async function getContractInstance(isscooter) {
 
         // 監聽合約的 CarListed 事件
         if (contract) {
-            contract.on('CarListed', async (carId, sender, model, plate, _pricePerHour) => {
-                console.log(`新車輛已添加：ID ${carId}, 車型 ${model} ,上架人 ${sender}`);
-                // 重新生成卡片以顯示新車輛
-                await generateRentalCards(isscooter);
+            contract.on('CarListed', async (carId, owner, scooter) => {
+                if (isscooter===scooter){
+                    console.log(`新車輛已添加：ID ${carId} ,上架人 ${owner}`);
+                    // 重新生成卡片以顯示新車輛
+                    await generateRentalCards(isscooter);
+                }
             });
         }
         return contract;
