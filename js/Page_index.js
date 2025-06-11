@@ -10,12 +10,22 @@ function timeToStr(timestamp){
 }
 
 // 檢查連接並獲取合約實例
-async function getContractInstance() {
+async function getContractInstance(isscooter) {
     try {
         // 使用 ethers.BrowserProvider 創建 provider (Ethers v6)
         const provider = new ethers.BrowserProvider(window.ethereum);
         // 創建合約實例 (唯讀模式，無需 signer)
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+        console.log("監聽合約事件：", contract);
+
+        // 監聽合約的 CarListed 事件
+        if (contract) {
+            contract.on('CarListed', async (carId, sender, model, plate, _pricePerHour) => {
+                console.log(`新車輛已添加：ID ${carId}, 車型 ${model} ,上架人 ${sender}`);
+                // 重新生成卡片以顯示新車輛
+                await generateRentalCards(isscooter);
+            });
+        }
         return contract;
     } catch (error) {
         console.error("獲取合約實例時發生錯誤:", error);
@@ -30,7 +40,7 @@ async function fetchAvailableCars(isscooter) {
         showLoading();
         
         // 獲取合約實例
-        const contract = await getContractInstance();
+        const contract = await getContractInstance(isscooter);
         if (!contract) {
             console.error("無法獲取合約實例");
             return "Error";

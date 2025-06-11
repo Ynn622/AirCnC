@@ -274,3 +274,11 @@ button:disabled:hover {
     transition: background 0.2s;
 }
 
+@media (max-width: 860px) {
+    .profile-tabs{
+        display: block;
+    }
+    .tab-btn{
+        margin-bottom: 5px;
+    }
+}

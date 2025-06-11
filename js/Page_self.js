@@ -575,6 +575,73 @@ $(async function() {
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log("鏈 ID:", chainId);
         
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+        console.log("監聽合約事件：", contract);
+
+        // 使用一個物件來記錄已處理的事件
+        const processedEvents = {};
+        
+        // 監聽合約
+        if (contract) {
+            // CarRented 事件
+            let CarRented = false;
+            contract.on('CarRented', async (carId, sender, rentstart, rentend, totalCost) => {
+                if (CarRented) return; // 防止重複處理
+                CarRented = true; // 標記為已處理
+
+                if (MyCarList.some(car => car.carId == carId)) {
+                    // 重新生成卡片以顯示新預約
+                    showLoading();
+                    await getMyCarList();
+                    renderOwnerData($('#dataFilter').val());
+                    hideLoading();
+                    console.log(`新預約已添加：ID ${carId}, 預約人 ${sender}`);
+                }
+                CarRented = false; // 重置標記
+            });
+
+            // RentalCancelled 事件
+            let RentalCancelled = false;
+            contract.on('RentalCancelled', async (carId, sender, refundAmount) => {
+                if (RentalCancelled) return; // 防止重複處理
+                RentalCancelled = true; // 標記為已處理
+                if (MyCarList.some(car => car.carId == carId)) {
+                    // 重新生成卡片以顯示新預約
+                    showLoading();
+                    await getMyCarList();
+                    renderOwnerData($('#dataFilter').val());
+                    hideLoading();
+                    console.log(`取消預約通知：ID ${carId}, 取消人 ${sender}`);
+                }
+                RentalCancelled = false; // 重置標記
+            });
+
+            // RentalStart 事件
+            let RentalStart = false;
+            contract.on('RentalStart', async (carId, renter) => {
+                if (RentalStart) return; // 防止重複處理
+                RentalStart = true; // 標記為已處理
+
+                if (MyCarList.some(car => car.carId == carId)) {
+                    // 重新生成卡片以顯示新預約
+                    showLoading();
+                    await getMyCarList();
+                    renderOwnerData($('#dataFilter').val());
+                    hideLoading();
+                    console.log(`租車開始通知：ID ${carId}, 租客 ${renter}`);
+                }
+                if (RentalsList.some(rental => rental.carId == carId)) {
+                    // 重新生成租賃資料
+                    showLoading();
+                    await getMyRentalsList();
+                    renderRentalData($('#dataFilter').val());
+                    hideLoading();
+                    console.log(`租車開始通知：ID ${carId}, 租客 ${renter}`);
+                }
+                RentalStart = false; // 重置標記
+            });
+        }
+
         // 更新用戶資料
         await updateUserInfo();
         
@@ -587,7 +654,6 @@ $(async function() {
         
         // 重新獲取資料
         await refreshData();
-        
         // 默認顯示車主資料
         $('.tab-btn[data-tab="owner-data"]').trigger('click');
         
