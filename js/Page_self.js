@@ -587,7 +587,7 @@ $(async function() {
                 if (CarRented) return; // 防止重複處理
                 CarRented = true; // 標記為已處理
 
-                if (owner == $("#userName").attr("data-address")) {
+                if (owner.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成卡片以顯示新預約
                     showLoading();
                     await getMyCarList();
@@ -603,7 +603,8 @@ $(async function() {
             contract.on('RentalCancelled', async (carId, renter, owner) => {
                 if (RentalCancelled) return; // 防止重複處理
                 RentalCancelled = true; // 標記為已處理
-                if (owner == $("#userName").attr("data-address")) {
+                
+                if (owner.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成卡片以顯示新預約
                     showLoading();
                     await getMyCarList();
@@ -620,7 +621,7 @@ $(async function() {
                 if (RentalStart) return; // 防止重複處理
                 RentalStart = true; // 標記為已處理
 
-                if (owner == $("#userName").attr("data-address")) {
+                if (owner.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成卡片以顯示新預約
                     showLoading();
                     await getMyCarList();
@@ -628,7 +629,7 @@ $(async function() {
                     hideLoading();
                     console.log(`租車開始通知：ID ${carId}, 租客 ${renter}`);
                 }
-                if (renter == $("#userName").attr("data-address")) {
+                if (renter.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成租賃資料
                     showLoading();
                     await getMyRentalsList();
@@ -645,7 +646,7 @@ $(async function() {
                 if (Renterreturn) return; // 防止重複處理
                 Renterreturn = true; // 標記為已處理
 
-                if (owner == $("#userName").attr("data-address")) {
+                if (owner.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成卡片以顯示新預約
                     showLoading();
                     await getMyCarList();
@@ -662,7 +663,7 @@ $(async function() {
                 if (RentalEnded) return; // 防止重複處理
                 RentalEnded = true; // 標記為已處理
 
-                if (renter == $("#userName").attr("data-address")) {
+                if (renter.toLowerCase() == $("#userName").attr("data-address")) {
                     // 重新生成租賃資料
                     showLoading();
                     await getMyRentalsList();

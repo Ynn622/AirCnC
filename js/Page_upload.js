@@ -516,28 +516,10 @@ window.addEventListener('resize', () => {
 
 // 監聽裁剪模態框顯示事件，確保裁剪器初始化後正確顯示
 document.getElementById('cropperModal').addEventListener('shown.bs.modal', () => {
-    if (cropper) {
+    if (cropper && window.innerWidth < 768) {
         // 確保裁剪器在模態框顯示後進行調整
         setTimeout(() => {
             cropper.resize();
-            
-            // 處理模態框視窗大小調整
-            const modalContent = document.querySelector('.modal-xl .modal-content');
-            const modalDialog = document.querySelector('.modal-xl .modal-dialog');
-            const imgContainer = document.querySelector('.img-container');
-            const isMobile = window.innerWidth < 768;
-            
-            if (!isMobile) {
-                // 桌面版視窗優化
-                modalDialog.style.display = 'flex';
-                modalDialog.style.alignItems = 'center';
-                modalDialog.style.justifyContent = 'center';
-                modalDialog.style.minHeight = '100vh';
-                imgContainer.style.maxHeight = window.innerHeight * 0.8 + 'px';
-            } else {
-                // 移動版視窗優化
-                modalDialog.style.margin = '10px auto';
-            }
         }, 300);
     }
 });
