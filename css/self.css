@@ -274,7 +274,7 @@ button:disabled:hover {
     transition: background 0.2s;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 600px) {
     .profile-tabs{
         display: block;
     }
